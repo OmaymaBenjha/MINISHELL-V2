@@ -3,20 +3,16 @@
 
 static char	*maybe_expand_line(char *line, bool flag, char **env)
 {
-	char	*new_str;
-	char	*original_expander_result;
+	// char	*new_str;
+	// char	*original_expander_result;
 
-	if (flag == true)
-	{
-		original_expander_result = expander(line, env);
-		new_str = ft_strdup(original_expander_result);
-	}
+	if (flag)
+		return (expander(line, env));
 	else
-		new_str = ft_strdup(line);
-	return (new_str);
+		return (gc_strdup(line));
 }
 
-int	process_heredoc_pipe(t_command *cmds_head, char **env)
+int	 process_heredoc_pipe(t_command *cmds_head, char **env)
 {
 	t_command	*cmd;
 	t_redir		*redir;
@@ -42,7 +38,7 @@ int	process_heredoc_pipe(t_command *cmds_head, char **env)
 					if (!line || ft_strcmp(line, delimiter) == 0)
 					{
 						if (line)
-							free(line);
+							free(line);  
 						break ;
 					}
 					processed_line = maybe_expand_line(line,
@@ -50,7 +46,7 @@ int	process_heredoc_pipe(t_command *cmds_head, char **env)
 					write(fd[1], processed_line, ft_strlen(processed_line));
 					write(fd[1], "\n", 1);
 					free(line);
-					free(processed_line);
+					// free(processed_line);
 				}
 				close(fd[1]);
 				redir->heredoc_fd = fd[0];

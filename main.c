@@ -75,7 +75,7 @@ int	main(int ac, char **arg, char **env)
 					if (process_heredoc_pipe(commands, env))
 					{
 					// None heredoc cases , i  order to expand it, filenames and args shouln't be 
-					// single quoted 
+					// inside single quotes
 						global_expand(commands, env);
 						quote_remover(commands);
 						executor(commands, env);

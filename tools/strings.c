@@ -110,7 +110,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 		return (NULL);
 	s_len = ft_strlen(s);
 	if (s_len < start)
-		return (ft_strdup(""));
+		return (gc_strdup(""));
 	if (len > s_len - start)
 		len = s_len - start;
 	r = malloc(len + 1);
@@ -124,4 +124,56 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	}
 	r[i] = '\0';
 	return (r);
+}
+// PASTE THIS CODE AT THE END OF YOUR tools/strings.c FILE
+
+static size_t	count_words(char const *s, char c)
+{
+	size_t	count;
+	size_t	i;
+
+	count = 0;
+	i = 0;
+	while (s && s[i])
+	{
+		if (s[i] != c)
+		{
+			count++;
+			while (s[i] && s[i] != c)
+				i++;
+		}
+		else
+			i++;
+	}
+	return (count);
+}
+
+char	**ft_split(char const *s, char c)
+{
+	char	**arr;
+	size_t	i;
+	size_t	j;
+	size_t	start;
+
+	if (!s)
+		return (NULL);
+	arr = (char **)malloc(sizeof(char *) * (count_words(s, c) + 1));
+	if (!arr)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (s[i])
+	{
+		if (s[i] != c)
+		{
+			start = i;
+			while (s[i] && s[i] != c)
+				i++;
+			arr[j++] = gc_substr(s, start, i - start);
+		}
+		else
+			i++;
+	}
+	arr[j] = NULL;
+	return (arr);
 }

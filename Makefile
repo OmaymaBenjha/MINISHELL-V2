@@ -1,6 +1,6 @@
 NAME = minishell
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror  -fsanitize=address -g
+CFLAGS = -Wall -Wextra -Werror 
 RM = rm -f
 
 SRCS =	main.c \

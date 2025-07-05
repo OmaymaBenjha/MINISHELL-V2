@@ -1,3 +1,4 @@
+
 #include "parsing.h"
 
 t_token	*tokenizer(char *line)
@@ -21,6 +22,8 @@ t_token	*tokenizer(char *line)
 			new_token = get_word_token(line, &i);
 		if (new_token == NULL)
 			return (NULL);
+		if (new_token == (void *)1)
+			continue;
 		add_token_back(&tokens, new_token);
 	}
 	add_token_back(&tokens, create_token(TOKEN_EOF, NULL));

@@ -2,7 +2,108 @@ import os
 
 # --- Corrected File Contents ---
 
-# Corrected: Fixed major memory leaks in handle_dollar_expansion
+TOKENIZER_WORDS_C = """
+#include "parsing.h"
+
+static char\t*extract_quoted_part(char *line, int *i)
+{
+\tchar\tquote_char;
+\tint\t\tstart;
+
+\tquote_char = line[*i];
+\tstart = *i;
+\t(*i)++;
+\twhile (line[*i] && line[*i] != quote_char)
+\t\t(*i)++;
+\tif (line[*i] == '\\0')
+\t{
+\t\tft_putstr_fd("minishell: syntax error: unclosed quote\\n", 2);
+\t\treturn (NULL);
+\t}
+\t(*i)++;
+\treturn (ft_substr(line, start, *i - start));
+}
+
+static char\t*extract_unquoted_part(char *line, int *i)
+{
+\tint\tstart;
+
+\tstart = *i;
+\twhile (line[*i] && !ft_isspace(line[*i]) && !is_metachar(line[*i])
+\t\t&& line[*i] != '\\'' && line[*i] != '\"')
+\t{
+\t\t(*i)++;
+\t}
+\treturn (ft_substr(line, start, *i - start));
+}
+
+t_token\t*get_word_token(char *line, int *i)
+{
+\tchar\t*word_so_far;
+\tchar\t*next_part;
+\tchar\t*temp;
+
+\tword_so_far = ft_strdup("");
+\tif (!word_so_far)
+\t\treturn (NULL);
+\twhile (line[*i] && !ft_isspace(line[*i]) && !is_metachar(line[*i]))
+\t{
+\t\tif (line[*i] == '\\'' || line[*i] == '\"')
+\t\t\tnext_part = extract_quoted_part(line, i);
+\t\telse
+\t\t\tnext_part = extract_unquoted_part(line, i);
+\t\tif (!next_part)
+\t\t{
+\t\t\tfree(word_so_far);
+\t\t\treturn (NULL);
+\t\t}
+\t\ttemp = word_so_far;
+\t\tword_so_far = ft_strjoin(temp, next_part);
+\t\tfree(temp);
+\t\tfree(next_part);
+\t}
+\tif (ft_strlen(word_so_far) == 0)
+\t{
+\t\tfree(word_so_far);
+\t\treturn ((void *)1);
+\t}
+\treturn (create_token(TOKEN_WORD, word_so_far));
+}
+"""
+
+TOKENIZER_TOKENIZER_C = """
+#include "parsing.h"
+
+t_token\t*tokenizer(char *line)
+{
+\tt_token\t*tokens;
+\tt_token\t*new_token;
+\tint\t\ti;
+
+\ttokens = NULL;
+\ti = 0;
+\twhile (line[i])
+\t{
+\t\tif (ft_isspace(line[i]))
+\t\t{
+\t\t\ti++;
+\t\t\tcontinue ;
+\t\t}
+\t\tif (is_metachar(line[i]))
+\t\t\tnew_token = get_operator_token(line, &i);
+\t\telse
+\t\t\tnew_token = get_word_token(line, &i);
+\t\tif (new_token == NULL)
+\t\t\treturn (NULL);
+\t\tif (new_token == (void *)1)
+\t\t\tcontinue;
+\t\tadd_token_back(&tokens, new_token);
+\t}
+\tadd_token_back(&tokens, create_token(TOKEN_EOF, NULL));
+\treturn (tokens);
+}
+"""
+
 EXPAND_EXPAND_C = """
 #include "parsing.h"
 #include <stdlib.h>
@@ -75,14 +176,22 @@ char\t*expander(char *str, char **env)
 {
 \tchar\t*new_str;
 \tint\t\ti;
+\tbool\tin_dquote;
+\tbool\tin_squote;
 
 \tif (!str)
 \t\treturn (NULL);
 \tnew_str = ft_strdup("");
 \ti = 0;
+\tin_dquote = false;
+\tin_squote = false;
 \twhile (str[i])
 \t{
-\t\tif (str[i] == '$')
+\t\tif (str[i] == '\\'' && !in_dquote)
+\t\t\tin_squote = !in_squote;
+\t\telse if (str[i] == '\\\"' && !in_squote)
+\t\t\tin_dquote = !in_dquote;
+\t\tif (str[i] == '$' && !in_squote)
 \t\t\thandle_dollar_expansion(&new_str, str, &i, env);
 \t\telse
 \t\t{
@@ -90,403 +199,32 @@ char\t*expander(char *str, char **env)
 \t\t\ti++;
 \t\t}
 \t}
-\tgc_add_pt(new_str);
 \treturn (new_str);
 }
 """
-
-# Corrected: Replaced buggy strncmp with robust strcmp for delimiter matching
-HEREDOC_PROCESSOR_C = """
-#include "parsing.h"
-
-static char\t*maybe_expand_line(char *line, bool flag, char **env)
-{
-\tchar\t*new_str;
-\tchar\t*original_expander_result;
-
-\tif (flag == true)
-\t{
-\t\toriginal_expander_result = expander(line, env);
-\t\tnew_str = ft_strdup(original_expander_result);
-\t}
-\telse
-\t\tnew_str = ft_strdup(line);
-\treturn (new_str);
-}
-
-int\tprocess_heredoc_pipe(t_command *cmds_head, char **env)
-{
-\tt_command\t*cmd;
-\tt_redir\t\t*redir;
-\tint\t\t\tfd[2];
-\tchar\t\t*line;
-\tchar\t\t*processed_line;
-\tchar\t\t*delimiter;
-
-\tcmd = cmds_head;
-\twhile (cmd)
-\t{
-\t\tredir = cmd->redirections;
-\t\twhile (redir)
-\t\t{
-\t\t\tif (redir->type == REDIR_HEREDOC)
-\t\t\t{
-\t\t\t\tif (pipe(fd) == -1)
-\t\t\t\t\treturn (perror("pipe"), 0);
-\t\t\t\tdelimiter = strip_quotes(redir->delimiter_or_filename);
-\t\t\t\twhile (1)
-\t\t\t\t{
-\t\t\t\t\tline = readline("heredoc> ");
-\t\t\t\t\tif (!line || ft_strcmp(line, delimiter) == 0)
-\t\t\t\t\t{
-\t\t\t\t\t\tif (line)
-\t\t\t\t\t\t\tfree(line);
-\t\t\t\t\t\tbreak ;
-\t\t\t\t\t}
-\t\t\t\t\tprocessed_line = maybe_expand_line(line,
-\t\t\t\t\t\t\tredir->expand_in_heredoc, env);
-\t\t\t\t\twrite(fd[1], processed_line, ft_strlen(processed_line));
-\t\t\t\t\twrite(fd[1], "\\n", 1);
-\t\t\t\t\tfree(line);
-\t\t\t\t\tfree(processed_line);
-\t\t\t\t}
-\t\t\t\tclose(fd[1]);
-\t\t\t\tredir->heredoc_fd = fd[0];
-\t\t\t}
-\t\t\tredir = redir->next;
-\t\t}
-\t\tcmd = cmd->next_piped_command;
-\t}
-\treturn (1);
-}
-"""
-
-# Corrected: Fixed logic to not strip quotes from heredoc delimiters
-EXPAND_QUOTES_REMOVAL_C = """
-#include "parsing.h"
-
-static void\tclean_quotes_in_args(t_command *cmd)
-{
-\tint\t\ti;
-\tchar\t*stripped;
-
-\ti = 0;
-\tif (!cmd || !cmd->args)
-\t\treturn ;
-\twhile (cmd->args[i])
-\t{
-\t\tstripped = strip_quotes(cmd->args[i]);
-\t\tif (stripped)
-\t\t\tcmd->args[i] = stripped;
-\t\ti++;
-\t}
-}
-
-static void\tclean_quotes_in_redirs(t_command *cmd)
-{
-\tt_redir\t*redir;
-\tchar\t*stripped;
-
-\tif (!cmd)
-\t\treturn ;
-\tredir = cmd->redirections;
-\twhile (redir)
-\t{
-\t\tif (redir->type != REDIR_HEREDOC)
-\t\t{
-\t\t\tstripped = strip_quotes(redir->delimiter_or_filename);
-\t\t\tif (stripped)
-\t\t\t\tredir->delimiter_or_filename = stripped;
-\t\t}
-\t\tredir = redir->next;
-\t}
-}
-
-void\tquote_remover(t_command *cmd_list)
-{
-\twhile (cmd_list)
-\t{
-\t\tclean_quotes_in_args(cmd_list);
-\t\tclean_quotes_in_redirs(cmd_list);
-\t\tcmd_list = cmd_list->next_piped_command;
-\t}
-}
-"""
-
-# Corrected: Added ft_strcmp and fixed ft_strncmp
-TOOLS_STRINGS_C = """
-#include "parsing.h"
-
-int\tft_isalpha(int c)
-{
-\treturn ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
-}
-
-int\tft_isalnum(int c)
-{
-\treturn (ft_isalpha(c) || (c >= '0' && c <= '9'));
-}
-
-char\t*ft_strjoin(char const *s1, char const *s2)
-{
-\tchar\t*new_str;
-\tsize_t\ti;
-\tsize_t\tj;
-
-\tif (!s1 || !s2)
-\t\treturn (NULL);
-\tnew_str = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-\tif (!new_str)
-\t\treturn (NULL);
-\ti = 0;
-\twhile (s1[i])
-\t{
-\t\tnew_str[i] = s1[i];
-\t\ti++;
-\t}
-\tj = 0;
-\twhile (s2[j])
-\t{
-\t\tnew_str[i + j] = s2[j];
-\t\tj++;
-\t}
-\tnew_str[i + j] = '\\0';
-\treturn (new_str);
-}
-
-int\tft_strcmp(const char *s1, const char *s2)
-{
-\tsize_t\ti;
-
-\ti = 0;
-\twhile (s1[i] && s2[i] && s1[i] == s2[i])
-\t\ti++;
-\treturn ((unsigned char)s1[i] - (unsigned char)s2[i]);
-}
-
-int\tft_strncmp(const char *s1, const char *s2, size_t n)
-{
-\tsize_t\ti;
-
-\ti = 0;
-\tif (n == 0)
-\t\treturn (0);
-\twhile (i < n - 1 && s1[i] && s2[i] && s1[i] == s2[i])
-\t\ti++;
-\treturn ((unsigned char)s1[i] - (unsigned char)s2[i]);
-}
-
-char\t*ft_strdup(char *value)
-{
-\tchar\t*result;
-\tint\t\ti;
-\tint\t\tlen;
-
-\tif (!value)
-\t\treturn (NULL);
-\tlen = ft_strlen(value);
-\tresult = malloc(sizeof(char) * (len + 1));
-\tif (!result)
-\t\treturn (NULL);
-\ti = 0;
-\twhile (value[i] != '\\0')
-\t{
-\t\tresult[i] = value[i];
-\t\ti++;
-\t}
-\tresult[i] = '\\0';
-\treturn (result);
-}
-
-size_t\tft_strlen(const char *s)
-{
-\tsize_t\ti;
-
-\ti = 0;
-\tif (!s)
-\t\treturn (0);
-\twhile (s[i])
-\t\ti++;
-\treturn (i);
-}
-
-void\tft_putstr_fd(const char *s, int fd)
-{
-\tif (s)
-\t\twrite(fd, s, ft_strlen(s));
-}
-
-char\t*ft_substr(char const *s, unsigned int start, size_t len)
-{
-\tsize_t\ti;
-\tchar\t*r;
-\tsize_t\ts_len;
-
-\tif (!s)
-\t\treturn (NULL);
-\ts_len = ft_strlen(s);
-\tif (s_len < start)
-\t\treturn (ft_strdup(""));
-\tif (len > s_len - start)
-\t\tlen = s_len - start;
-\tr = malloc(len + 1);
-\tif (!r)
-\t\treturn (NULL);
-\ti = 0;
-\twhile (i < len)
-\t{
-\t\tr[i] = s[start + i];
-\t\ti++;
-\t}
-\tr[i] = '\\0';
-\treturn (r);
-}
-"""
-
-# Corrected: Added the prototype for ft_strcmp
-PARSING_H = """
-#ifndef PARSING_H
-# define PARSING_H
-
-# include <stdlib.h>
-# include <stddef.h>
-# include <stdio.h>
-# include <stdbool.h>
-# include <unistd.h>
-# include <readline/readline.h>
-# include <readline/history.h>
-# include <signal.h>
-# include <sys/wait.h>
-
-typedef struct s_gc_node
-{
-\tvoid\t\t\t\t*pt;
-\tstruct s_gc_node\t*next;
-}t_gc_node;
-
-typedef enum e_token_type
-{
-\tTOKEN_WORD,
-\tTOKEN_PIPE,
-\tTOKEN_REDIR_IN,
-\tTOKEN_REDIR_OUT,
-\tTOKEN_REDIR_APPEND,
-\tTOKEN_REDIR_HEREDOC,
-\tTOKEN_NEWLINE,
-\tTOKEN_EOF,
-\tTOKEN_ERROR
-}t_token_type;
-
-typedef struct s_token
-{
-\tt_token_type\ttype;
-\tchar\t\t\t*value;
-\tstruct s_token\t*next;
-}t_token;
-
-typedef enum e_redir_type
-{
-\tREDIR_NONE,
-\tREDIR_INPUT,
-\tREDIR_OUTPUT_TRUNC,
-\tREDIR_OUTPUT_APPEND,
-\tREDIR_HEREDOC
-}t_redir_type;
-
-typedef struct s_redir
-{
-\tt_redir_type\ttype;
-\tchar\t\t\t*delimiter_or_filename;
-\tint\t\t\t\theredoc_fd;
-\tbool\t\t\texpand_in_heredoc;
-\tstruct s_redir\t*next;
-}t_redir;
-
-typedef struct s_command
-{
-\tchar\t\t\t\t**args;
-\tt_redir\t\t\t\t*redirections;
-\tstruct s_command\t*next_piped_command;
-}t_command;
-
-void\t\tgc_add_pt(void *pt);
-void\t\t*gc_mall(size_t size);
-char\t\t*gc_strdup(char *str);
-void\t\tgc_freed(void);
-
-// TOKENIZER PROTOTYPES
-t_token\t\t*tokenizer(char *line);
-t_token\t\t*create_token(t_token_type type, char *value);
-void\t\tadd_token_back(t_token **list, t_token *new_token);
-t_token\t\t*get_operator_token(char *line, int *i);
-t_token\t\t*get_word_token(char *line, int *i);
-
-// PARSER PROTOTYPES
-t_command\t*parser(t_token *tokens);
-int\t\t\tsyntax_error_handler(char *token_value);
-t_command\t*create_command_node(void);
-void\t\tadd_command_node_back(t_command **list, t_command *new_cmd);
-t_redir\t\t*create_redir_node(t_token_type type, char *filename);
-void\t\tadd_redir_node_back(t_redir **list, t_redir *new_redir);
-int\t\t\thandle_redirection(t_command *cmd, t_token **current_token);
-
-// HEREDOC PROTOTYPES
-int\t\t\tprocess_heredoc_pipe(t_command *cmds_head, char **env);
-
-// EXPAND PROTOTYPES
-char\t\t*expander(char *str, char **env);
-void\t\tquote_remover(t_command *cmd_list);
-char\t\t*strip_quotes(const char *str);
-void\t\tglobal_expand(t_command *cmds_head, char **env);
-
-// TOOLS/STRINGS PROTOTYPES
-char\t\t*ft_strdup(char *value);
-int\t\t\tft_strncmp(const char *s1, const char *s2, size_t n);
-int\t\t\tft_strcmp(const char *s1, const char *s2);
-size_t\t\tft_strlen(const char *s);
-void\t\tft_putstr_fd(const char *s, int fd);
-char\t\t*ft_substr(char const *s, unsigned int start, size_t len);
-char\t\t*ft_strjoin(char const *s1, char const *s2);
-int\t\t\tft_isalpha(int c);
-int\t\t\tft_isalnum(int c);
-char\t\t*ft_itoa(int n);
-
-// TOOLS/CHECKERS PROTOTYPES
-int\t\t\tft_isspace(char c);
-int\t\t\tis_metachar(char c);
-int\t\t\tis_unsupported_metachar(char c);
-
-#endif
-"""
-
-# --- Main Script Logic ---
 
 def apply_fixes():
-    """Finds and overwrites project files with their corrected versions."""
-    
     files_to_fix = {
+        "TOKENIZER/words.c": TOKENIZER_WORDS_C,
+        "TOKENIZER/tokenizer.c": TOKENIZER_TOKENIZER_C,
         "EXPAND/expand.c": EXPAND_EXPAND_C,
-        "HEREDOC/processor.c": HEREDOC_PROCESSOR_C,
-        "EXPAND/quotes_removal.c": EXPAND_QUOTES_REMOVAL_C,
-        "TOOLS/strings.c": TOOLS_STRINGS_C,
-        "parsing.h": PARSING_H
     }
     
-    print("--- Applying Fixes to Minishell Project ---")
+    print("--- Applying Tokenizer and Expander Fixes ---")
     
     for filepath, content in files_to_fix.items():
         if os.path.exists(filepath):
             try:
                 with open(filepath, "w") as f:
                     f.write(content)
-                print(f"[SUCCESS] Corrected '{filepath}'")
+                print("[SUCCESS] Corrected '{}'".format(filepath))
             except IOError as e:
-                print(f"[ERROR] Could not write to '{filepath}': {e}")
+                print("[ERROR] Could not write to '{}': {}".format(filepath, e))
         else:
-            print(f"[WARNING] File not found, skipping: '{filepath}'")
+            print("[WARNING] File not found, skipping: '{}'".format(filepath))
             
     print("\n--- Fixes Applied ---")
-    print("Please run 'make clean && make' to recompile your project.")
+    print("Run 'make clean && make' and re-run the test script.")
 
 if __name__ == "__main__":
     apply_fixes()

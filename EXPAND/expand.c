@@ -70,14 +70,22 @@ char	*expander(char *str, char **env)
 {
 	char	*new_str;
 	int		i;
+	bool	in_dquote;
+	bool	in_squote;
 
 	if (!str)
 		return (NULL);
 	new_str = ft_strdup("");
 	i = 0;
+	in_dquote = false;
+	in_squote = false;
 	while (str[i])
 	{
-		if (str[i] == '$')
+		if (str[i] == '\'' && !in_dquote)
+			in_squote = !in_squote;
+		else if (str[i] == '\"' && !in_squote)
+			in_dquote = !in_dquote;
+		if (str[i] == '$' && !in_squote)
 			handle_dollar_expansion(&new_str, str, &i, env);
 		else
 		{

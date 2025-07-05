@@ -67,6 +67,9 @@ void		gc_add_pt(void *pt);
 void		*gc_mall(size_t size);
 char		*gc_strdup(char *str);
 void		gc_freed(void);
+char		*gc_substr(char const *s, unsigned int start, size_t len);
+char		*gc_strjoin(char const *s1, char const *s2);
+char		*gc_itoa(int n);
 
 // TOKENIZER PROTOTYPES
 t_token		*tokenizer(char *line);
@@ -104,10 +107,11 @@ char		*ft_strjoin(char const *s1, char const *s2);
 int			ft_isalpha(int c);
 int			ft_isalnum(int c);
 char		*ft_itoa(int n);
+void executor(t_command *commands, char **envp);
 
 // TOOLS/CHECKERS PROTOTYPES
 int			ft_isspace(char c);
 int			is_metachar(char c);
 int			is_unsupported_metachar(char c);
-
+char	**ft_split(char const *s, char c);
 #endif

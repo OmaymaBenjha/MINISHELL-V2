@@ -1,10 +1,10 @@
+
 #include "parsing.h"
 
-static char	*get_quoted_word(char *line, int *i)
+static char	*extract_quoted_part(char *line, int *i)
 {
 	char	quote_char;
 	int		start;
-	char	*word;
 
 	quote_char = line[*i];
 	start = *i;
@@ -17,40 +17,46 @@ static char	*get_quoted_word(char *line, int *i)
 		return (NULL);
 	}
 	(*i)++;
-	word = ft_substr(line, start, *i - start);
-	gc_add_pt(word);
-	return (word);
+	return (gc_substr(line, start, *i - start));
 }
 
-static char	*get_regular_word(char *line, int *i)
+static char	*extract_unquoted_part(char *line, int *i)
 {
-	int		start;
-	char	*word;
+	int	start;
 
 	start = *i;
-	while (line[*i] && !ft_isspace(line[*i]) && !is_metachar(line[*i]) \
-		&& line[*i] != '\'' && line[*i] != '\"')
+	while (line[*i] && !ft_isspace(line[*i]) && !is_metachar(line[*i])
+		&& line[*i] != '\'' && line[*i] != '"')
 	{
 		(*i)++;
 	}
-	word = ft_substr(line, start, *i - start);
-	gc_add_pt(word);
-	return (word);
+	return (gc_substr(line, start, *i - start));
 }
 
 t_token	*get_word_token(char *line, int *i)
 {
-	char	*word_value;
+	char	*word_so_far;
+	char	*next_part;
+	char	*temp;
 
-	if (line[*i] == '\'' || line[*i] == '\"')
+	word_so_far = gc_strdup("");
+	if (!word_so_far)
+		return (NULL);
+	while (line[*i] && !ft_isspace(line[*i]) && !is_metachar(line[*i]))
 	{
-		word_value = get_quoted_word(line, i);
-		if (word_value == NULL)
+		if (line[*i] == '\'' || line[*i] == '"')
+			next_part = extract_quoted_part(line, i);
+		else
+			next_part = extract_unquoted_part(line, i);
+		if (!next_part)
+		{
+			free(word_so_far);
 			return (NULL);
+		}
+		temp = word_so_far;
+		word_so_far = gc_strjoin(temp, next_part);
 	}
-	else
-	{
-		word_value = get_regular_word(line, i);
-	}
-	return (create_token(TOKEN_WORD, word_value));
+	if (ft_strlen(word_so_far) == 0)
+		return (free(word_so_far), (void *)1);
+	return (create_token(TOKEN_WORD, word_so_far));
 }
