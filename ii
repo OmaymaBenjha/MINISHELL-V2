@@ -1,0 +1,24 @@
+total 80
+drwxrwxrwx 1 obenjha obenjha  4096 Jul  4 17:44 .
+drwxrwxrwx 1 obenjha obenjha  4096 Jul  4 17:43 ..
+-rwxrwxrwx 1 obenjha obenjha     6 Jul  4 15:37 $VAR
+drwxrwxrwx 1 obenjha obenjha  4096 Jul  4 17:42 1
+drwxrwxrwx 1 obenjha obenjha  4096 Jul  4 17:31 EXECUTION
+drwxrwxrwx 1 obenjha obenjha  4096 Jul  4 17:31 EXPAND
+drwxrwxrwx 1 obenjha obenjha  4096 Jul  4 17:31 GARBAGE_COLLECTOR
+drwxrwxrwx 1 obenjha obenjha  4096 Jul  4 17:31 HEREDOC
+-rwxrwxrwx 1 obenjha obenjha     0 Jul  4 17:44 ii
+-rwxrwxrwx 1 obenjha obenjha  1542 Jul  4 17:09 main.c
+-rwxrwxrwx 1 obenjha obenjha  3152 Jul  4 17:30 main.o
+-rwxrwxrwx 1 obenjha obenjha   795 Jul  4 17:36 Makefile
+-rwxrwxrwx 1 obenjha obenjha 27840 Jul  4 17:31 minishell
+-rwxrwxrwx 1 obenjha obenjha     0 Jul  4 17:44 no
+-rwxrwxrwx 1 obenjha obenjha     8 Jul  4 15:11 o
+-rwxrwxrwx 1 obenjha obenjha   152 Jul  4 17:23 obenjha
+-rwxrwxrwx 1 obenjha obenjha     0 Jul  4 17:44 ok
+drwxrwxrwx 1 obenjha obenjha  4096 Jul  4 17:31 PARSER
+-rwxrwxrwx 1 obenjha obenjha  2812 Jul  4 17:09 parsing.h
+-rwxrwxrwx 1 obenjha obenjha 23807 Jul  4 16:59 project_data.json
+-rwxrwxrwx 1 obenjha obenjha  9548 Jul  4 17:09 script.py
+drwxrwxrwx 1 obenjha obenjha  4096 Jul  4 17:30 TOKENIZER
+drwxrwxrwx 1 obenjha obenjha  4096 Jul  4 17:30 tools

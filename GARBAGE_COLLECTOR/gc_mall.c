@@ -1,0 +1,66 @@
+#include "../parsing.h"
+
+static t_gc_node	*g_gc_head = NULL;
+
+void	gc_add_pt(void *pt)
+{
+	t_gc_node	*new_node;
+
+	if (!pt) 
+		return;
+	new_node = (t_gc_node *)malloc(sizeof(t_gc_node));
+	if (!new_node)
+	{
+		perror("malloc failed in garbage collector");
+		exit(EXIT_FAILURE);
+	}
+	new_node->pt = pt;
+	new_node->next = g_gc_head;
+	g_gc_head = new_node;
+}
+
+char	*gc_strdup(char *str)
+{
+	char	*new_str;
+
+	if (!str)
+		return (NULL);
+	new_str = ft_strdup(str);
+	if (!new_str)
+	{
+		perror("strdup failed!");
+		exit(EXIT_FAILURE);
+	}
+	gc_add_pt(new_str);
+	return (new_str);
+}
+
+void	*gc_mall(size_t size)
+{
+	void	*pt;
+
+	pt = malloc(size);
+	if (!pt)
+	{
+		perror("malloc failed!");
+		exit(EXIT_FAILURE);
+	}
+	gc_add_pt(pt);
+	return (pt);
+}
+
+void	gc_freed(void)
+{
+	t_gc_node	*current;
+	t_gc_node	*tmp;
+
+	current = g_gc_head;
+	while (current != NULL)
+	{
+		tmp = current;
+		current = current->next;
+		free(tmp->pt); 
+		free(tmp);
+	}
+	g_gc_head = NULL;
+}
