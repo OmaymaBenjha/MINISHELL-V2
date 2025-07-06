@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   words.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/06 19:13:51 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/07/06 19:13:56 by oben-jha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "parsing.h"
 
@@ -27,9 +38,7 @@ static char	*extract_unquoted_part(char *line, int *i)
 	start = *i;
 	while (line[*i] && !ft_isspace(line[*i]) && !is_metachar(line[*i])
 		&& line[*i] != '\'' && line[*i] != '"')
-	{
 		(*i)++;
-	}
 	return (gc_substr(line, start, *i - start));
 }
 
