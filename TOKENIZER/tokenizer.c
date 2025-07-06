@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokenizer.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/06 19:15:46 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/07/06 19:16:10 by oben-jha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "parsing.h"
 
@@ -23,7 +34,7 @@ t_token	*tokenizer(char *line)
 		if (new_token == NULL)
 			return (NULL);
 		if (new_token == (void *)1)
-			continue;
+			continue ;
 		add_token_back(&tokens, new_token);
 	}
 	add_token_back(&tokens, create_token(TOKEN_EOF, NULL));
