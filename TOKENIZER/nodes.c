@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   nodes.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/06 19:17:32 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/07/06 19:17:32 by oben-jha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parsing.h"
 
 t_token	*create_token(t_token_type type, char *value)
@@ -19,11 +31,11 @@ void	add_token_back(t_token **list, t_token *new_token)
 	t_token	*current;
 
 	if (!list || !new_token)
-		return;
+		return ;
 	if (*list == NULL)
 	{
 		*list = new_token;
-		return;
+		return ;
 	}
 	current = *list;
 	while (current->next != NULL)
