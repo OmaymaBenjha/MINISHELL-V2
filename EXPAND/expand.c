@@ -1,4 +1,4 @@
-
+#include "EXECUTION/status.h"
 #include "parsing.h"
 #include <stdlib.h>
 
@@ -40,7 +40,7 @@ static void	handle_dollar_expansion(char **new_str, const char *str, int *i,
 	(*i)++;
 	if (str[*i] == '?')
 	{
-		temp_str = ft_itoa(0);
+		temp_str = ft_itoa(get_exit_status());
 		temp_join = *new_str;
 		*new_str = ft_strjoin(temp_join, temp_str);
 		free(temp_join);
@@ -93,6 +93,5 @@ char	*expander(char *str, char **env)
 			i++;
 		}
 	}
-	gc_add_pt(new_str);
 	return (new_str);
 }
