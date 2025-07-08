@@ -25,10 +25,12 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
+
+	if (!isatty(0) || !isatty(1))
+		return (1);
 	env_copy = dupenv(envp);
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, signal_handler);
-
 	while (1)
 	{
 		line = readline("minishell> ");
