@@ -1,63 +1,70 @@
-NAME 		= minishell
+NAME = minishell
 
-CC 			= cc
-CFLAGS 		= -Wall -Wextra -Werror
-RM 			= rm -f
+CC = cc
+CFLAGS = -Wall -Wextra -Werror
+RM = rm -f
 
+INCLUDES = -I. \
+           -IEXECUTION \
+           -IEXECUTION/builtins \
+           -IEXPAND \
+           -IPARSER \
+           -IPARSER/nodes \
+           -ITOKENIZER \
+           -IGARBAGE_COLLECTOR \
+           -IHEREDOC \
+           -Itools
 
-READLINE_PATH = /mnt/homes/oben-jha/homebrew/opt/readline
+LDFLAGS = -lreadline
 
-INCLUDE_DIRS = -I. \
-               -IEXECUTION \
-               -IEXECUTION/builtins \
-               -IEXPAND \
-               -IPARSER \
-               -IPARSER/nodes \
-               -ITOKENIZER \
-               -IGARBAGE_COLLECTOR \
-               -IHEREDOC \
-               -Itools \
-               -I$(READLINE_PATH)/include 
+SRCS = main.c \
+       EXECUTION/builtins_dispatch.c \
+       EXECUTION/env_utils.c \
+       EXECUTION/executor.c \
+       EXECUTION/path_finder.c \
+       EXECUTION/redirections.c \
+       EXECUTION/status.c \
+       EXECUTION/builtins/ft_cd.c \
+       EXECUTION/builtins/ft_echo.c \
+       EXECUTION/builtins/ft_env.c \
+       EXECUTION/builtins/ft_exit.c \
+       EXECUTION/builtins/ft_export.c \
+       EXECUTION/builtins/ft_pwd.c \
+       EXECUTION/builtins/ft_unset.c \
+       EXPAND/expand.c \
+       EXPAND/g_expand.c \
+       EXPAND/quotes_removal.c \
+       EXPAND/utils.c \
+       GARBAGE_COLLECTOR/gc_mall.c \
+       HEREDOC/processor.c \
+       PARSER/error_handler.c \
+       PARSER/processor.c \
+       PARSER/redirections.c \
+       PARSER/nodes/cmd_nodes.c \
+       PARSER/nodes/redir_nodes.c \
+       TOKENIZER/nodes.c \
+       TOKENIZER/operators.c \
+       TOKENIZER/tokenizer.c \
+       TOKENIZER/tools.c \
+       TOKENIZER/words.c \
+       tools/strings.c
 
-
-LDFLAGS		= -L$(READLINE_PATH)/lib -lreadline
-
-SRC_DIRS 	= EXECUTION \
-			  EXECUTION/builtins \
-			  EXPAND \
-			  GARBAGE_COLLECTOR \
-			  HEREDOC \
-			  PARSER \
-			  PARSER/nodes \
-			  TOKENIZER \
-			  tools
-
-SRCS 		= $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.c))
-SRCS	   += main.c
-OBJS 		= $(SRCS:.c=.o)
-HDRS		= $(wildcard $(foreach dir, $(SRC_DIRS), $(dir)/*.h)) parsing.h
-
-.PHONY: all clean fclean re bonus
+OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	@$(CC) $(OBJS) $(LDFLAGS) -o $(NAME)
-	@echo "\033[32mMinishell compiled successfully!\033[0m"
+	$(CC) $(OBJS) $(LDFLAGS) -o $(NAME)
 
-%.o: %.c Makefile $(HDRS)
-	@$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
-	@echo "\033[34mCompiling: \033[0m$<"
+%.o: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
-	@$(RM) $(OBJS)
-	@echo "\033[33mObject files cleaned.\033[0m"
+	$(RM) $(OBJS)
 
 fclean: clean
-	@$(RM) $(NAME)
-	@echo "\033[31mExecutable cleaned.\033[0m"
+	$(RM) $(NAME)
 
 re: fclean all
 
-bonus: all
-	@echo "\033[35mBonus part not implemented in Makefile. Building main part.\033[0m"
+.PHONY: all clean fclean re

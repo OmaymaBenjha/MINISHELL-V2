@@ -25,9 +25,6 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-
-	if (!isatty(0) || !isatty(1))
-		return (1);
 	env_copy = dupenv(envp);
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, signal_handler);
@@ -55,6 +52,7 @@ int	main(int argc, char **argv, char **envp)
 		free(line);
 		gc_freed();
 	}
+	free_env(env_copy);
 	gc_freed();
 	return (get_exit_status());
 }

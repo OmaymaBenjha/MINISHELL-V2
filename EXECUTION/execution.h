@@ -10,6 +10,7 @@
 
 void	executor(t_command *commands, char ***envp);
 char	**dupenv(char **envp);
+void	free_env(char **envp);
 
 int		handle_redirections(t_command *cmd);
 void	restore_fds(int original_stdin, int original_stdout);

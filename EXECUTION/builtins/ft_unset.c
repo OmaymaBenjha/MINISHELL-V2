@@ -16,24 +16,26 @@ static int	remove_env_var(char *var_to_unset, char ***envp_ptr)
 	int		j;
 	int		count;
 	char	**new_envp;
-	int		len;
+	size_t	len;
 
 	len = ft_strlen(var_to_unset);
 	count = count_vars(*envp_ptr);
-	new_envp = gc_mall(sizeof(char *) * count);
+	new_envp = malloc(sizeof(char *) * (count + 1));
+	if (!new_envp)
+		return (1);
 	i = 0;
 	j = 0;
 	while (i < count)
 	{
-		if (ft_strncmp((*envp_ptr)[i], var_to_unset, len) != 0
-			|| (*envp_ptr)[i][len] != '=')
-		{
-			new_envp[j] = (*envp_ptr)[i];
-			j++;
-		}
+		if (ft_strncmp((*envp_ptr)[i], var_to_unset, len) == 0
+			&& ((*envp_ptr)[i][len] == '=' || (*envp_ptr)[i][len] == '\0'))
+			free((*envp_ptr)[i]);
+		else
+			new_envp[j++] = (*envp_ptr)[i];
 		i++;
 	}
 	new_envp[j] = NULL;
+	free(*envp_ptr);
 	*envp_ptr = new_envp;
 	return (0);
 }
