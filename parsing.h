@@ -107,7 +107,7 @@ char		*ft_strjoin(char const *s1, char const *s2);
 int			ft_isalpha(int c);
 int			ft_isalnum(int c);
 char		*ft_itoa(int n);
-void executor(t_command *commands, char **envp);
+void executor(t_command *commands, char ***envp);
 
 // TOOLS/CHECKERS PROTOTYPES
 int			ft_isspace(char c);
@@ -115,3 +115,5 @@ int			is_metachar(char c);
 int			is_unsupported_metachar(char c);
 char	**ft_split(char const *s, char c);
 #endif
+
+char		*ft_strchr(const char *s, int c);

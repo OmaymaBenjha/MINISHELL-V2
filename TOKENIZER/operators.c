@@ -27,7 +27,7 @@ t_token	*get_operator_token(char *line, int *i)
 	{
 		(*i)++;
 		if (line[*i] == '<')
-			return ((*i)++, create_token(TOKEN_REDIR_APPEND, "<<"));
+			return ((*i)++, create_token(TOKEN_REDIR_HEREDOC, "<<"));
 		return (create_token(TOKEN_REDIR_IN, "<"));
 	}
 	return (NULL);

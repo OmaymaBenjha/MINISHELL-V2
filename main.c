@@ -1,91 +1,58 @@
 #include "parsing.h"
+#include "EXECUTION/execution.h"
 
-void	print_commands(t_command *list)
+static void	signal_handler(int sig)
 {
-	t_command	*cmd;
-	t_redir		*redir;
-	int			i;
-	int			j;
-
-	cmd = list;
-	i = 1;
-	while (cmd)
+	if (sig == SIGINT)
 	{
-		printf("\n--- Command %d ---\n", i++);
-		j = 0;
-		if (cmd->args)
-		{
-			while (cmd->args[j])
-			{
-				printf("  args[%d]: [%s]\n", j, cmd->args[j]);
-				j++;
-			}
-		}
-		else
-		{
-			printf("  args: (null)\n");
-		}
-		redir = cmd->redirections;
-		if (redir)
-		{
-			j = 1;
-			while (redir)
-			{
-				printf("  Redir %d -> Type: %d, File: [%s]\n", j++, redir->type,
-					redir->delimiter_or_filename);
-				redir = redir->next;
-			}
-		}
-		cmd = cmd->next_piped_command;
-		if (cmd)
-		{
-			printf("    |\n");
-			printf("    V\n");
-		}
+		write(1, "\n", 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
 	}
-	printf("\n");
+	else if (sig == SIGQUIT)
+	{
+		(void)sig;
+	}
 }
 
-int	main(int ac, char **arg, char **env)
+int	main(int argc, char **argv, char **envp)
 {
-	char		*input_line;
+	char		*line;
+	char		**env_copy;
 	t_token		*tokens;
 	t_command	*commands;
 
-	(void)ac;
-	(void)arg;
+	(void)argc;
+	(void)argv;
+	env_copy = dupenv(envp);
+	signal(SIGINT, signal_handler);
+	signal(SIGQUIT, signal_handler);
+
 	while (1)
 	{
-		input_line = readline("minishell> ");
-		if (!input_line)
+		line = readline("minishell> ");
+		if (!line)
 		{
-			printf("exit\n");
+			ft_putstr_fd("exit\n", 1);
 			break ;
 		}
-		if (input_line[0] != '\0')
+		if (*line)
+			add_history(line);
+		tokens = tokenizer(line);
+		commands = parser(tokens);
+		if (commands)
 		{
-			add_history(input_line);
-			tokens = tokenizer(input_line);
-			if (tokens)
+			if (process_heredoc_pipe(commands, env_copy))
 			{
-				commands = parser(tokens);
-				if (commands)
-				{
-					// heredoc, in order to expand it , the delimiter shouldn't be quoted at all
-					if (process_heredoc_pipe(commands, env))
-					{
-					// None heredoc cases , i  order to expand it, filenames and args shouln't be 
-					// inside single quotes
-						global_expand(commands, env);
-						quote_remover(commands);
-						executor(commands, env);
-					}
-				}
+				global_expand(commands, env_copy);
+				quote_remover(commands);
+				executor(commands, &env_copy);
 			}
 		}
-		free(input_line);
+		free(line);
 		gc_freed();
 	}
 	gc_freed();
-	return (0);
+	return (get_exit_status());
 }

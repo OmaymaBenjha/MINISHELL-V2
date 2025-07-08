@@ -1,45 +1,63 @@
-NAME = minishell
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror 
-RM = rm -f
+NAME 		= minishell
 
-SRCS =	main.c \
-		TOKENIZER/tokenizer.c \
-		TOKENIZER/tools.c \
-		TOKENIZER/nodes.c \
-		TOKENIZER/words.c \
-		TOKENIZER/operators.c \
-		TOOLS/strings.c \
-		PARSER/nodes/cmd_nodes.c \
-		PARSER/error_handler.c \
-		PARSER/processor.c \
-		PARSER/redirections.c \
-		PARSER/nodes/redir_nodes.c \
-		GARBAGE_COLLECTOR/gc_mall.c \
-		HEREDOC/processor.c \
-		EXPAND/expand.c \
-		EXPAND/quotes_removal.c \
-		EXPAND/utils.c \
-		EXPAND/g_expand.c \
-		EXECUTION/executor.c \
-		EXECUTION/builtins.c
+CC 			= cc
+CFLAGS 		= -Wall -Wextra -Werror
+RM 			= rm -f
 
-OBJS = $(SRCS:.c=.o)
+
+READLINE_PATH = /mnt/homes/oben-jha/homebrew/opt/readline
+
+INCLUDE_DIRS = -I. \
+               -IEXECUTION \
+               -IEXECUTION/builtins \
+               -IEXPAND \
+               -IPARSER \
+               -IPARSER/nodes \
+               -ITOKENIZER \
+               -IGARBAGE_COLLECTOR \
+               -IHEREDOC \
+               -Itools \
+               -I$(READLINE_PATH)/include 
+
+
+LDFLAGS		= -L$(READLINE_PATH)/lib -lreadline
+
+SRC_DIRS 	= EXECUTION \
+			  EXECUTION/builtins \
+			  EXPAND \
+			  GARBAGE_COLLECTOR \
+			  HEREDOC \
+			  PARSER \
+			  PARSER/nodes \
+			  TOKENIZER \
+			  tools
+
+SRCS 		= $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.c))
+SRCS	   += main.c
+OBJS 		= $(SRCS:.c=.o)
+HDRS		= $(wildcard $(foreach dir, $(SRC_DIRS), $(dir)/*.h)) parsing.h
+
+.PHONY: all clean fclean re bonus
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) -lreadline
+	@$(CC) $(OBJS) $(LDFLAGS) -o $(NAME)
+	@echo "\033[32mMinishell compiled successfully!\033[0m"
 
-%.o: %.c
-	$(CC) $(CFLAGS) -I. -c $< -o $@
+%.o: %.c Makefile $(HDRS)
+	@$(CC) $(CFLAGS) $(INCLUDE_DIRS) -c $< -o $@
+	@echo "\033[34mCompiling: \033[0m$<"
 
 clean:
-	$(RM) $(OBJS)
+	@$(RM) $(OBJS)
+	@echo "\033[33mObject files cleaned.\033[0m"
 
 fclean: clean
-	$(RM) $(NAME)
+	@$(RM) $(NAME)
+	@echo "\033[31mExecutable cleaned.\033[0m"
 
 re: fclean all
 
-.PHONY: all clean fclean re
+bonus: all
+	@echo "\033[35mBonus part not implemented in Makefile. Building main part.\033[0m"

@@ -1,148 +1,114 @@
 #include "execution.h"
-#include "parsing.h" // <--- ADD THIS LINE
 
-// Forward declaration for builtins
-int handle_builtin(t_command *cmd, char **envp);
-
-static void handle_redirections(t_redir *redir)
+static void	run_child(t_command *cmd, char **envp)
 {
-    int fd;
-    // ... rest of the function is correct
-    while (redir)
-    {
-        if (redir->type == REDIR_OUTPUT_TRUNC || redir->type == REDIR_OUTPUT_APPEND)
-        {
-            if (redir->type == REDIR_OUTPUT_TRUNC)
-                fd = open(redir->delimiter_or_filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-            else
-                fd = open(redir->delimiter_or_filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
-            if (fd == -1)
-                return (perror("open"));
-            dup2(fd, STDOUT_FILENO);
-            close(fd);
-        }
-        else if (redir->type == REDIR_INPUT || redir->type == REDIR_HEREDOC)
-        {
-            if (redir->type == REDIR_INPUT)
-                fd = open(redir->delimiter_or_filename, O_RDONLY);
-            else // Heredoc
-                fd = redir->heredoc_fd;
-            if (fd == -1)
-                return (perror("open"));
-            dup2(fd, STDIN_FILENO);
-            close(fd);
-        }
-        redir = redir->next;
-    }
+	char	*path;
+
+	if (handle_redirections(cmd) == -1)
+		exit(1);
+	if (!cmd->args || !cmd->args[0])
+		exit(0);
+	if (is_builtin(cmd->args[0]))
+	{
+		execute_builtin(cmd, &envp);
+		exit(get_exit_status());
+	}
+	path = find_path(cmd->args[0], envp);
+	if (!path)
+		exit(127);
+	execve(path, cmd->args, envp);
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(cmd->args[0], 2);
+	ft_putstr_fd(": ", 2);
+	ft_putstr_fd(strerror(errno), 2);
+	ft_putstr_fd("\n", 2);
+	if (errno == EACCES)
+		exit(126);
+	exit(1);
 }
 
-
-static char *find_path(char *cmd, char **envp)
+static void	execute_single_command(t_command *cmd, char ***envp_ptr)
 {
-    char **paths;
-    char *path;
-    char *part_path;
-    int i;
+	pid_t	pid;
+	int		original_fds[2];
 
-    if (cmd && (cmd[0] == '/' || cmd[0] == '.'))
-        if (access(cmd, X_OK) == 0)
-            return (ft_strdup(cmd));
-    i = 0;
-    while (envp[i] && ft_strncmp(envp[i], "PATH=", 5) != 0)
-        i++;
-    if (!envp[i])
-        return (NULL);
-    paths = ft_split(envp[i] + 5, ':'); // This will now compile
-    i = 0;
-    while (paths && paths[i])
-    {
-        part_path = ft_strjoin(paths[i], "/");
-        path = ft_strjoin(part_path, cmd);
-        free(part_path);
-        if (access(path, X_OK) == 0)
-        {
-            // A real implementation should free the 'paths' array
-            return (path);
-        }
-        free(path);
-        i++;
-    }
-    // A real implementation should free the 'paths' array
-    return (NULL);
+	if (cmd->args && cmd->args[0] && is_parent_builtin(cmd->args[0]))
+	{
+		original_fds[0] = dup(STDIN_FILENO);
+		original_fds[1] = dup(STDOUT_FILENO);
+		if (handle_redirections(cmd) == -1)
+		{
+			set_exit_status(1);
+			restore_fds(original_fds[0], original_fds[1]);
+			return ;
+		}
+		execute_builtin(cmd, envp_ptr);
+		restore_fds(original_fds[0], original_fds[1]);
+		return ;
+	}
+	pid = fork();
+	if (pid == -1)
+	{
+		set_exit_status(1);
+		return ;
+	}
+	if (pid == 0)
+		run_child(cmd, *envp_ptr);
+	set_exit_status(wait_for_children(pid));
 }
 
-
-static void execute_child(t_command *cmd, char **envp)
+static void	child_process_pipeline(t_command *cmd, char **envp,
+	int in_fd, int *pipe_fd)
 {
-    char *path;
-
-    handle_redirections(cmd->redirections);
-    if (handle_builtin(cmd, envp))
-        exit(0);
-    path = find_path(cmd->args[0], envp);
-    if (!path)
-    {
-        ft_putstr_fd("minishell: command not found: ", 2);
-        ft_putstr_fd(cmd->args[0], 2);
-        ft_putstr_fd("\n", 2);
-        exit(127);
-    }
-    execve(path, cmd->args, envp);
-    perror("execve");
-    exit(126);
+	if (in_fd != STDIN_FILENO)
+	{
+		dup2(in_fd, STDIN_FILENO);
+		close(in_fd);
+	}
+	if (cmd->next_piped_command)
+	{
+		close(pipe_fd[0]);
+		dup2(pipe_fd[1], STDOUT_FILENO);
+		close(pipe_fd[1]);
+	}
+	run_child(cmd, envp);
 }
 
-
-void executor(t_command *commands, char **envp)
+static void	execute_pipeline(t_command *cmd, char ***envp_ptr)
 {
-    t_command *cmd;
-    pid_t pid;
-    int status;
-    int pipe_fd[2];
-    int prev_pipe_fd = -1;
+	int		pipe_fd[2];
+	int		in_fd;
+	pid_t	pid;
 
-    cmd = commands;
-    if (!cmd)
-        return;
+	in_fd = STDIN_FILENO;
+	while (cmd)
+	{
+		if (cmd->next_piped_command)
+			if (pipe(pipe_fd) == -1)
+				return (set_exit_status(1));
+		pid = fork();
+		if (pid == -1)
+			return (set_exit_status(1));
+		if (pid == 0)
+			child_process_pipeline(cmd, *envp_ptr, in_fd, pipe_fd);
+		if (in_fd != STDIN_FILENO)
+			close(in_fd);
+		if (cmd->next_piped_command)
+		{
+			close(pipe_fd[1]);
+			in_fd = pipe_fd[0];
+		}
+		cmd = cmd->next_piped_command;
+	}
+	set_exit_status(wait_for_children(pid));
+}
 
-    // Simple case: one command, maybe a builtin that modifies the parent shell
-    if (!cmd->next_piped_command && handle_builtin(cmd, envp))
-        return;
-    
-    while (cmd)
-    {
-        if (cmd->next_piped_command)
-            if (pipe(pipe_fd) == -1)
-                return (perror("pipe"));
-        
-        pid = fork();
-        if (pid == -1)
-            return (perror("fork"));
-        
-        if (pid == 0) // Child process
-        {
-            if (prev_pipe_fd != -1)
-            {
-                dup2(prev_pipe_fd, STDIN_FILENO);
-                close(prev_pipe_fd);
-            }
-            if (cmd->next_piped_command)
-            {
-                dup2(pipe_fd[1], STDOUT_FILENO);
-                close(pipe_fd[0]);
-                close(pipe_fd[1]);
-            }
-            execute_child(cmd, envp);
-        }
-        // Parent process
-        if (prev_pipe_fd != -1)
-            close(prev_pipe_fd);
-        if (cmd->next_piped_command)
-        {
-            close(pipe_fd[1]);
-            prev_pipe_fd = pipe_fd[0];
-        }
-        cmd = cmd->next_piped_command;
-    }
-    while (wait(&status) > 0);
+void	executor(t_command *commands, char ***envp)
+{
+	if (!commands)
+		return ;
+	if (commands->next_piped_command)
+		execute_pipeline(commands, envp);
+	else
+		execute_single_command(commands, envp);
 }
