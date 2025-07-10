@@ -4,14 +4,11 @@
 
 static void	append_char(char **s, char c)
 {
-	char	*temp;
 	char	to_append[2];
 
 	to_append[0] = c;
 	to_append[1] = '\0';
-	temp = *s;
-	*s = ft_strjoin(temp, to_append);
-	free(temp);
+	*s = gc_strjoin(*s, to_append);
 }
 
 static char	*extract_variable_name(const char *str)
@@ -25,7 +22,7 @@ static char	*extract_variable_name(const char *str)
 		while (ft_isalnum(str[i]) || str[i] == '_')
 			i++;
 	}
-	return (ft_substr(str, 0, i));
+	return (gc_substr(str, 0, i));
 }
 
 static void	handle_dollar_expansion(char **new_str, const char *str, int *i,
@@ -33,18 +30,12 @@ static void	handle_dollar_expansion(char **new_str, const char *str, int *i,
 {
 	char	*key;
 	char	*value;
-	char	*temp_str;
-	char	*temp_join;
 
 	(void)env;
 	(*i)++;
 	if (str[*i] == '?')
 	{
-		temp_str = ft_itoa(get_exit_status());
-		temp_join = *new_str;
-		*new_str = ft_strjoin(temp_join, temp_str);
-		free(temp_join);
-		free(temp_str);
+		*new_str = gc_strjoin(*new_str, gc_itoa(get_exit_status()));
 		(*i)++;
 		return ;
 	}
@@ -52,18 +43,14 @@ static void	handle_dollar_expansion(char **new_str, const char *str, int *i,
 	if (!key || *key == '\0')
 	{
 		append_char(new_str, '$');
-		free(key);
 		return ;
 	}
-	value = getenv(key);
+	value = getenv(key); 
 	if (value)
 	{
-		temp_join = *new_str;
-		*new_str = ft_strjoin(temp_join, value);
-		free(temp_join);
+		*new_str = gc_strjoin(*new_str, value);
 	}
 	*i += ft_strlen(key);
-	free(key);
 }
 
 char	*expander(char *str, char **env)
@@ -75,7 +62,7 @@ char	*expander(char *str, char **env)
 
 	if (!str)
 		return (NULL);
-	new_str = ft_strdup("");
+	new_str = gc_strdup("");
 	i = 0;
 	in_dquote = false;
 	in_squote = false;
