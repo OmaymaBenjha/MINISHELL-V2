@@ -45,7 +45,7 @@ static void	handle_dollar_expansion(char **new_str, const char *str, int *i,
 		append_char(new_str, '$');
 		return ;
 	}
-	value = getenv(key); 
+	value = my_getenv(key, env); 
 	if (value)
 	{
 		*new_str = gc_strjoin(*new_str, value);
