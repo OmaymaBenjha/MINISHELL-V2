@@ -157,7 +157,7 @@ char	**ft_split(char const *s, char c)
 
 	if (!s)
 		return (NULL);
-	arr = (char **)malloc(sizeof(char *) * (count_words(s, c) + 1));
+	arr = (char **)gc_mall(sizeof(char *) * (count_words(s, c) + 1));
 	if (!arr)
 		return (NULL);
 	i = 0;
