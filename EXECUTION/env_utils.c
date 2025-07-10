@@ -53,3 +53,23 @@ char	**dupenv(char **envp)
 	new_envp[i] = NULL;
 	return (new_envp);
 }
+char	*my_getenv(const char *name, char **env)
+{
+	int		i;
+	size_t	name_len;
+
+	if (!name || !env)
+		return (NULL);
+	name_len = ft_strlen(name);
+	i = 0;
+	while (env[i])
+	{
+		if (ft_strncmp(env[i], name, name_len) == 0)
+		{
+			if (env[i][name_len] == '=')
+				return (env[i] + name_len + 1);
+		}
+		i++;
+	}
+	return (NULL);
+}
