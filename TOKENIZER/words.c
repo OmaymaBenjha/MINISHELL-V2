@@ -58,14 +58,11 @@ t_token	*get_word_token(char *line, int *i)
 		else
 			next_part = extract_unquoted_part(line, i);
 		if (!next_part)
-		{
-			free(word_so_far);
 			return (NULL);
-		}
 		temp = word_so_far;
 		word_so_far = gc_strjoin(temp, next_part);
 	}
 	if (ft_strlen(word_so_far) == 0)
-		return (free(word_so_far), (void *)1);
+		return ((void *)1);
 	return (create_token(TOKEN_WORD, word_so_far));
 }
