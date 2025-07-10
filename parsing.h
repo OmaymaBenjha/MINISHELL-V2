@@ -115,5 +115,7 @@ int			is_metachar(char c);
 int			is_unsupported_metachar(char c);
 char		**ft_split(char const *s, char c);
 char		*ft_strchr(const char *s, int c);
+char		*my_getenv(const char *name, char **env);
+
 
 #endif
