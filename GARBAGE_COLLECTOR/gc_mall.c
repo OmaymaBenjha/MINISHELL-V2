@@ -1,13 +1,19 @@
 #include "../parsing.h"
 
-static t_gc_node	*g_gc_head = NULL;
+static t_gc_node	**get_gc_head_instance(void)
+{
+	static t_gc_node	*head;
+	return (&head);
+}
 
 void	gc_add_pt(void *pt)
 {
 	t_gc_node	*new_node;
+	t_gc_node	**head;
 
-	if (!pt) 
-		return;
+	if (!pt)
+		return ;
+	head = get_gc_head_instance();
 	new_node = (t_gc_node *)malloc(sizeof(t_gc_node));
 	if (!new_node)
 	{
@@ -15,8 +21,8 @@ void	gc_add_pt(void *pt)
 		exit(EXIT_FAILURE);
 	}
 	new_node->pt = pt;
-	new_node->next = g_gc_head;
-	g_gc_head = new_node;
+	new_node->next = *head;
+	*head = new_node;
 }
 
 char	*gc_strdup(char *str)
@@ -34,7 +40,8 @@ char	*gc_strdup(char *str)
 	gc_add_pt(new_str);
 	return (new_str);
 }
-char		*gc_substr(char const *s, unsigned int start, size_t len)
+
+char	*gc_substr(char const *s, unsigned int start, size_t len)
 {
 	char	*new_str;
 
@@ -49,7 +56,8 @@ char		*gc_substr(char const *s, unsigned int start, size_t len)
 	gc_add_pt(new_str);
 	return (new_str);
 }
-char		*gc_strjoin(char const *s1, char const *s2)
+
+char	*gc_strjoin(char const *s1, char const *s2)
 {
 	char	*new_str;
 
@@ -64,6 +72,7 @@ char		*gc_strjoin(char const *s1, char const *s2)
 	gc_add_pt(new_str);
 	return (new_str);
 }
+
 char	*gc_itoa(int n)
 {
 	char	*new_str;
@@ -77,6 +86,7 @@ char	*gc_itoa(int n)
 	gc_add_pt(new_str);
 	return (new_str);
 }
+
 void	*gc_mall(size_t size)
 {
 	void	*pt;
@@ -95,14 +105,16 @@ void	gc_freed(void)
 {
 	t_gc_node	*current;
 	t_gc_node	*tmp;
+	t_gc_node	**head;
 
-	current = g_gc_head;
+	head = get_gc_head_instance();
+	current = *head;
 	while (current != NULL)
 	{
 		tmp = current;
 		current = current->next;
-		free(tmp->pt); 
+		free(tmp->pt);
 		free(tmp);
 	}
-	g_gc_head = NULL;
+	*head = NULL;
 }
