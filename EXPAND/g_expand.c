@@ -14,7 +14,7 @@ static bool	is_single_quoted(const char *str)
 	return (false);
 }
 
-void	global_expand(t_command *cmds_head, char **env)
+void	global_expand(t_command *cmds_head, t_shell *shell)
 {
 	t_command	*cmd;
 	t_redir		*redir;
@@ -27,7 +27,7 @@ void	global_expand(t_command *cmds_head, char **env)
 		while (cmd->args && cmd->args[i])
 		{
 			if (!is_single_quoted(cmd->args[i]))
-				cmd->args[i] = expander(cmd->args[i], env);
+				cmd->args[i] = expander(cmd->args[i], shell);
 			i++;
 		}
 		redir = cmd->redirections;
@@ -36,7 +36,7 @@ void	global_expand(t_command *cmds_head, char **env)
 			if (redir->type != REDIR_HEREDOC
 				&& !is_single_quoted(redir->delimiter_or_filename))
 				redir->delimiter_or_filename = expander(redir->delimiter_or_filename,
-						env);
+						shell);
 			redir = redir->next;
 		}
 		cmd = cmd->next_piped_command;

@@ -1,4 +1,3 @@
-#include "EXECUTION/status.h"
 #include "parsing.h"
 #include <stdlib.h>
 
@@ -26,16 +25,15 @@ static char	*extract_variable_name(const char *str)
 }
 
 static void	handle_dollar_expansion(char **new_str, const char *str, int *i,
-		char **env)
+		t_shell *shell)
 {
 	char	*key;
 	char	*value;
 
-	(void)env;
 	(*i)++;
 	if (str[*i] == '?')
 	{
-		*new_str = gc_strjoin(*new_str, gc_itoa(get_exit_status()));
+		*new_str = gc_strjoin(*new_str, gc_itoa(shell->last_exit_status));
 		(*i)++;
 		return ;
 	}
@@ -45,7 +43,7 @@ static void	handle_dollar_expansion(char **new_str, const char *str, int *i,
 		append_char(new_str, '$');
 		return ;
 	}
-	value = my_getenv(key, env); 
+	value = my_getenv(key, shell->envp);
 	if (value)
 	{
 		*new_str = gc_strjoin(*new_str, value);
@@ -53,7 +51,7 @@ static void	handle_dollar_expansion(char **new_str, const char *str, int *i,
 	*i += ft_strlen(key);
 }
 
-char	*expander(char *str, char **env)
+char	*expander(char *str, t_shell *shell)
 {
 	char	*new_str;
 	int		i;
@@ -73,7 +71,7 @@ char	*expander(char *str, char **env)
 		else if (str[i] == '\"' && !in_squote)
 			in_dquote = !in_dquote;
 		if (str[i] == '$' && !in_squote)
-			handle_dollar_expansion(&new_str, str, &i, env);
+			handle_dollar_expansion(&new_str, str, &i, shell);
 		else
 		{
 			append_char(&new_str, str[i]);

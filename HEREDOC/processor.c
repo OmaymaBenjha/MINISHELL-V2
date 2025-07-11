@@ -1,18 +1,14 @@
-
 #include "parsing.h"
 
-static char	*maybe_expand_line(char *line, bool flag, char **env)
+static char	*maybe_expand_line(char *line, bool flag, t_shell *shell)
 {
-	// char	*new_str;
-	// char	*original_expander_result;
-
 	if (flag)
-		return (expander(line, env));
+		return (expander(line, shell));
 	else
 		return (gc_strdup(line));
 }
 
-int	 process_heredoc_pipe(t_command *cmds_head, char **env)
+int	process_heredoc_pipe(t_command *cmds_head, t_shell *shell)
 {
 	t_command	*cmd;
 	t_redir		*redir;
@@ -38,15 +34,14 @@ int	 process_heredoc_pipe(t_command *cmds_head, char **env)
 					if (!line || ft_strcmp(line, delimiter) == 0)
 					{
 						if (line)
-							free(line);  
+							free(line);
 						break ;
 					}
 					processed_line = maybe_expand_line(line,
-							redir->expand_in_heredoc, env);
+							redir->expand_in_heredoc, shell);
 					write(fd[1], processed_line, ft_strlen(processed_line));
 					write(fd[1], "\n", 1);
 					free(line);
-					// free(processed_line);
 				}
 				close(fd[1]);
 				redir->heredoc_fd = fd[0];

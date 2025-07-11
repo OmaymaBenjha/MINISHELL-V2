@@ -40,14 +40,14 @@ static int	remove_env_var(char *var_to_unset, char ***envp_ptr)
 	return (0);
 }
 
-int	ft_unset(char **args, char ***envp_ptr)
+int	ft_unset(char **args, t_shell *shell)
 {
 	int	i;
 
 	i = 1;
 	while (args[i])
 	{
-		remove_env_var(args[i], envp_ptr);
+		remove_env_var(args[i], &shell->envp);
 		i++;
 	}
 	return (0);

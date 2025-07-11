@@ -2,38 +2,51 @@
 #include "EXECUTION/execution.h"
 #include <termios.h>
 
+volatile sig_atomic_t	g_signal_received = 0;
+
 static void	signal_handler(int sig)
 {
-	if (sig == SIGINT)
+	g_signal_received = sig;
+}
+
+static void	handle_signals_in_main_loop(t_shell *shell)
+{
+	if (g_signal_received == SIGINT)
 	{
+		g_signal_received = 0;
+		shell->last_exit_status = 130;
 		write(1, "\n", 1);
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
 	}
-	else if (sig == SIGQUIT)
-	{
-		(void)sig;
-	}
+}
+
+static void	init_shell(t_shell *shell, char **envp)
+{
+	shell->envp = dupenv(envp);
+	shell->last_exit_status = 0;
+	g_signal_received = 0;
+	rl_catch_signals = 0;
+	signal(SIGINT, signal_handler);
+	signal(SIGQUIT, signal_handler);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
 	char		*line;
-	char		**env_copy;
 	t_token		*tokens;
 	t_command	*commands;
-	struct termios term;
+	t_shell		shell;
+	struct termios	term;
+
 	(void)argc;
 	(void)argv;
-		rl_catch_signals = 0;
-
-	env_copy = dupenv(envp);
-	signal(SIGINT, signal_handler);
-	signal(SIGQUIT, signal_handler);
+	init_shell(&shell, envp);
 	tcgetattr(0, &term);
 	while (1)
 	{
+		handle_signals_in_main_loop(&shell);
 		line = readline("minishell> ");
 		if (!line)
 		{
@@ -46,18 +59,18 @@ int	main(int argc, char **argv, char **envp)
 		commands = parser(tokens);
 		if (commands)
 		{
-			if (process_heredoc_pipe(commands, env_copy))
+			if (process_heredoc_pipe(commands, &shell))
 			{
-				global_expand(commands, env_copy);
+				global_expand(commands, &shell);
 				quote_remover(commands);
-				executor(commands, &env_copy);
+				executor(commands, &shell);
 				tcsetattr(0, TCSANOW, &term);
 			}
 		}
 		free(line);
 		gc_freed();
 	}
-	free_env(env_copy);
+	free_env(shell.envp);
 	gc_freed();
-	return (get_exit_status());
+	return (shell.last_exit_status);
 }

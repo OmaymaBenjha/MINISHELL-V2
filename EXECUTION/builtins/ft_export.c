@@ -60,7 +60,7 @@ static int	add_or_update_env(char *arg, char ***envp_ptr)
 	return (0);
 }
 
-int	ft_export(char **args, char ***envp_ptr)
+int	ft_export(char **args, t_shell *shell)
 {
 	int	i;
 	int	status;
@@ -68,7 +68,7 @@ int	ft_export(char **args, char ***envp_ptr)
 	i = 1;
 	status = 0;
 	if (!args[1])
-		return (print_exported_vars(*envp_ptr));
+		return (print_exported_vars(shell->envp));
 	while (args[i])
 	{
 		if (!ft_strchr(args[i], '='))
@@ -76,7 +76,7 @@ int	ft_export(char **args, char ***envp_ptr)
 			i++;
 			continue ;
 		}
-		if (add_or_update_env(args[i], envp_ptr) != 0)
+		if (add_or_update_env(args[i], &shell->envp) != 0)
 		{
 			ft_putstr_fd("minishell: export: allocation error\n", 2);
 			status = 1;

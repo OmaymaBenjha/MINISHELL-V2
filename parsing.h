@@ -11,11 +11,17 @@
 # include <signal.h>
 # include <sys/wait.h>
 
+typedef struct s_shell
+{
+	char	**envp;
+	int		last_exit_status;
+}	t_shell;
+
 typedef struct s_gc_node
 {
 	void				*pt;
 	struct s_gc_node	*next;
-}t_gc_node;
+}	t_gc_node;
 
 typedef enum e_token_type
 {
@@ -28,14 +34,14 @@ typedef enum e_token_type
 	TOKEN_NEWLINE,
 	TOKEN_EOF,
 	TOKEN_ERROR
-}t_token_type;
+}	t_token_type;
 
 typedef struct s_token
 {
 	t_token_type	type;
 	char			*value;
 	struct s_token	*next;
-}t_token;
+}	t_token;
 
 typedef enum e_redir_type
 {
@@ -44,7 +50,7 @@ typedef enum e_redir_type
 	REDIR_OUTPUT_TRUNC,
 	REDIR_OUTPUT_APPEND,
 	REDIR_HEREDOC
-}t_redir_type;
+}	t_redir_type;
 
 typedef struct s_redir
 {
@@ -53,14 +59,14 @@ typedef struct s_redir
 	int				heredoc_fd;
 	bool			expand_in_heredoc;
 	struct s_redir	*next;
-}t_redir;
+}	t_redir;
 
 typedef struct s_command
 {
 	char				**args;
 	t_redir				*redirections;
 	struct s_command	*next_piped_command;
-}t_command;
+}	t_command;
 
 void		gc_add_pt(void *pt);
 void		*gc_mall(size_t size);
@@ -87,13 +93,13 @@ void		add_redir_node_back(t_redir **list, t_redir *new_redir);
 int			handle_redirection(t_command *cmd, t_token **current_token);
 
 // HEREDOC PROTOTYPES
-int			process_heredoc_pipe(t_command *cmds_head, char **env);
+int			process_heredoc_pipe(t_command *cmds_head, t_shell *shell);
 
 // EXPAND PROTOTYPES
-char		*expander(char *str, char **env);
+char		*expander(char *str, t_shell *shell);
 void		quote_remover(t_command *cmd_list);
 char		*strip_quotes(const char *str);
-void		global_expand(t_command *cmds_head, char **env);
+void		global_expand(t_command *cmds_head, t_shell *shell);
 char		*my_getenv(const char *name, char **env);
 
 // TOOLS/STRINGS PROTOTYPES
@@ -107,7 +113,11 @@ char		*ft_strjoin(char const *s1, char const *s2);
 int			ft_isalpha(int c);
 int			ft_isalnum(int c);
 char		*ft_itoa(int n);
-void		executor(t_command *commands, char ***envp);
+void		executor(t_command *commands, t_shell *shell);
+char		**dupenv(char **envp);
+void		free_env(char **envp);
+int			ft_atoi(const char *str);
+
 
 // TOOLS/CHECKERS PROTOTYPES
 int			ft_isspace(char c);
@@ -115,7 +125,5 @@ int			is_metachar(char c);
 int			is_unsupported_metachar(char c);
 char		**ft_split(char const *s, char c);
 char		*ft_strchr(const char *s, int c);
-char		*my_getenv(const char *name, char **env);
-
 
 #endif

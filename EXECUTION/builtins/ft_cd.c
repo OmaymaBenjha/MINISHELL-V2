@@ -14,7 +14,7 @@ static char	*get_home_path(char **envp)
 	return (NULL);
 }
 
-int	ft_cd(char **args, char **envp)
+int	ft_cd(char **args, t_shell *shell)
 {
 	char	*path;
 
@@ -26,7 +26,7 @@ int	ft_cd(char **args, char **envp)
 	path = args[1];
 	if (!path)
 	{
-		path = get_home_path(envp);
+		path = get_home_path(shell->envp);
 		if (!path)
 		{
 			ft_putstr_fd("minishell: cd: HOME not set\n", 2);

@@ -58,7 +58,6 @@ static char	*check_absolute_path(char *cmd)
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(cmd, 2);
 		ft_putstr_fd(": is a directory\n", 2);
-		set_exit_status(126);
 		return (NULL);
 	}
 	if (access(cmd, X_OK) == 0)

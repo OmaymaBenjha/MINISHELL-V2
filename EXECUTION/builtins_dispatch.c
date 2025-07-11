@@ -37,7 +37,7 @@ int	is_parent_builtin(char *cmd)
 	return (0);
 }
 
-void	execute_builtin(t_command *cmd, char ***envp_ptr)
+void	execute_builtin(t_command *cmd, t_shell *shell)
 {
 	char	*cmd_name;
 	int		status;
@@ -49,16 +49,16 @@ void	execute_builtin(t_command *cmd, char ***envp_ptr)
 	if (ft_strcmp(cmd_name, "echo") == 0)
 		status = ft_echo(cmd->args);
 	else if (ft_strcmp(cmd_name, "cd") == 0)
-		status = ft_cd(cmd->args, *envp_ptr);
+		status = ft_cd(cmd->args, shell);
 	else if (ft_strcmp(cmd_name, "pwd") == 0)
 		status = ft_pwd();
 	else if (ft_strcmp(cmd_name, "export") == 0)
-		status = ft_export(cmd->args, envp_ptr);
+		status = ft_export(cmd->args, shell);
 	else if (ft_strcmp(cmd_name, "unset") == 0)
-		status = ft_unset(cmd->args, envp_ptr);
+		status = ft_unset(cmd->args, shell);
 	else if (ft_strcmp(cmd_name, "env") == 0)
-		status = ft_env(*envp_ptr);
+		status = ft_env(shell);
 	else if (ft_strcmp(cmd_name, "exit") == 0)
-		status = ft_exit(cmd->args);
-	set_exit_status(status);
+		status = ft_exit(cmd->args, shell);
+	shell->last_exit_status = status;
 }

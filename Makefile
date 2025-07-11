@@ -23,7 +23,6 @@ SRCS = main.c \
        EXECUTION/executor.c \
        EXECUTION/path_finder.c \
        EXECUTION/redirections.c \
-       EXECUTION/status.c \
        EXECUTION/builtins/ft_cd.c \
        EXECUTION/builtins/ft_echo.c \
        EXECUTION/builtins/ft_env.c \

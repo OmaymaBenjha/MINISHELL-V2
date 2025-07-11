@@ -83,7 +83,7 @@ int	wait_for_children(pid_t last_pid)
 	int	pid;
 
 	if (last_pid == -1)
-		return (get_exit_status());
+		return (1);
 	exit_status = 1;
 	waitpid(last_pid, &status, 0);
 	if (WIFEXITED(status))
