@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/11 23:38:20 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/07/11 23:38:20 by oben-jha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parsing.h" 
 
 static size_t	count_stripped_len(const char *str)
@@ -24,7 +36,7 @@ static size_t	count_stripped_len(const char *str)
 	return (len);
 }
 
-char    *strip_quotes(const char *str)
+char	*strip_quotes(const char *str)
 {
 	size_t	i;
 	size_t	j;
@@ -53,42 +65,4 @@ char    *strip_quotes(const char *str)
 	}
 	cleaned[j] = '\0';
 	return (cleaned);
-}
-
-static int	count_digits(int n)
-{
-	int	count = 1;
-
-	while (n / 10)
-	{
-		n /= 10;
-		count++;
-	}
-	return (count);
-}
-
-char	*ft_itoa(int n)
-{
-	char		*str;
-	long		num;
-	int			len;
-	int			is_negative;
-
-	num = n;
-	is_negative = (num < 0);
-	if (is_negative)
-		num = -num;
-	len = count_digits(num) + is_negative;
-	str = malloc(sizeof(char) * (len + 1));
-	if (!str)
-		return (NULL);
-	str[len] = '\0';
-	while (len-- > 0)
-	{
-		str[len] = '0' + (num % 10);
-		num /= 10;
-		if (len == 0 && is_negative)
-			str[0] = '-';
-	}
-	return (str);
 }

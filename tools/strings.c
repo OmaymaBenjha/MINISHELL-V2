@@ -214,3 +214,40 @@ int	ft_atoi(const char *str)
 	}
 	return ((int)(result * sign));
 }
+static int	count_digits(int n)
+{
+	int	count = 1;
+
+	while (n / 10)
+	{
+		n /= 10;
+		count++;
+	}
+	return (count);
+}
+
+char	*ft_itoa(int n)
+{
+	char		*str;
+	long		num;
+	int			len;
+	int			is_negative;
+
+	num = n;
+	is_negative = (num < 0);
+	if (is_negative)
+		num = -num;
+	len = count_digits(num) + is_negative;
+	str = malloc(sizeof(char) * (len + 1));
+	if (!str)
+		return (NULL);
+	str[len] = '\0';
+	while (len-- > 0)
+	{
+		str[len] = '0' + (num % 10);
+		num /= 10;
+		if (len == 0 && is_negative)
+			str[0] = '-';
+	}
+	return (str);
+}

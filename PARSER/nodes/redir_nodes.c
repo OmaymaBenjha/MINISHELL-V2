@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redir_nodes.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/11 23:15:32 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/07/11 23:15:32 by oben-jha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parsing.h"
 
 static bool	is_quoted(const char *str)
@@ -29,7 +41,7 @@ t_redir	*create_redir_node(t_token_type type, char *filename)
 		new_redir->type = REDIR_OUTPUT_APPEND;
 	else if (type == TOKEN_REDIR_HEREDOC)
 		new_redir->type = REDIR_HEREDOC;
-	new_redir->delimiter_or_filename = gc_strdup(filename);
+	new_redir->del_or_fname = gc_strdup(filename);
 	new_redir->heredoc_fd = -1;
 	new_redir->expand_in_heredoc = !is_quoted(filename);
 	new_redir->next = NULL;
@@ -41,11 +53,11 @@ void	add_redir_node_back(t_redir **list, t_redir *new_redir)
 	t_redir	*current;
 
 	if (!list || !new_redir)
-		return;
+		return ;
 	if (*list == NULL)
 	{
 		*list = new_redir;
-		return;
+		return ;
 	}
 	current = *list;
 	while (current->next != NULL)

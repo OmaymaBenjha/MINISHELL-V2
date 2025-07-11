@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cmd_nodes.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/11 23:15:23 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/07/11 23:15:23 by oben-jha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parsing.h"
 
 t_command	*create_command_node(void)
@@ -16,11 +28,11 @@ void	add_command_node_back(t_command **list, t_command *new_cmd)
 	t_command	*current;
 
 	if (!list || !new_cmd)
-		return;
+		return ;
 	if (*list == NULL)
 	{
 		*list = new_cmd;
-		return;
+		return ;
 	}
 	current = *list;
 	while (current->next_piped_command != NULL)

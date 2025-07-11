@@ -6,11 +6,11 @@ static int	handle_input_redir(t_redir *redir)
 	
 	if (redir->type == REDIR_INPUT)
 	{
-		fd = open(redir->delimiter_or_filename, O_RDONLY);
+		fd = open(redir->del_or_fname, O_RDONLY);
 		if (fd == -1)
 		{
 			ft_putstr_fd("minishell: ", 2);
-			perror(redir->delimiter_or_filename);
+			perror(redir->del_or_fname);
 			return (-1);
 		}
 		dup2(fd, STDIN_FILENO);
@@ -29,15 +29,15 @@ static int	handle_output_redir(t_redir *redir)
 	int	fd;
 
 	if (redir->type == REDIR_OUTPUT_TRUNC)
-		fd = open(redir->delimiter_or_filename,
+		fd = open(redir->del_or_fname,
 				O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	else
-		fd = open(redir->delimiter_or_filename,
+		fd = open(redir->del_or_fname,
 				O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
 	{
 		ft_putstr_fd("minishell: ", 2);
-		perror(redir->delimiter_or_filename);
+		perror(redir->del_or_fname);
 		return (-1);
 	}
 	dup2(fd, STDOUT_FILENO);

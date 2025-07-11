@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   g_expand.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/11 23:35:58 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/07/11 23:37:26 by oben-jha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parsing.h"
 
 static bool	is_single_quoted(const char *str)
@@ -34,8 +46,8 @@ void	global_expand(t_command *cmds_head, t_shell *shell)
 		while (redir)
 		{
 			if (redir->type != REDIR_HEREDOC
-				&& !is_single_quoted(redir->delimiter_or_filename))
-				redir->delimiter_or_filename = expander(redir->delimiter_or_filename,
+				&& !is_single_quoted(redir->del_or_fname))
+				redir->del_or_fname = expander(redir->del_or_fname,
 						shell);
 			redir = redir->next;
 		}

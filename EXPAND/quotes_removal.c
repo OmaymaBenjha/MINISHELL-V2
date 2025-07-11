@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   quotes_removal.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/11 23:37:45 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/07/11 23:37:45 by oben-jha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "parsing.h"
 
@@ -30,9 +41,9 @@ static void	clean_quotes_in_redirs(t_command *cmd)
 	{
 		if (redir->type != REDIR_HEREDOC)
 		{
-			stripped = strip_quotes(redir->delimiter_or_filename);
+			stripped = strip_quotes(redir->del_or_fname);
 			if (stripped)
-				redir->delimiter_or_filename = stripped;
+				redir->del_or_fname = stripped;
 		}
 		redir = redir->next;
 	}

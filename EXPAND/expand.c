@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/11 23:34:49 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/07/11 23:35:32 by oben-jha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parsing.h"
 #include <stdlib.h>
 
@@ -73,10 +85,7 @@ char	*expander(char *str, t_shell *shell)
 		if (str[i] == '$' && !in_squote)
 			handle_dollar_expansion(&new_str, str, &i, shell);
 		else
-		{
-			append_char(&new_str, str[i]);
-			i++;
-		}
+			(append_char(&new_str, str[i]), i++);
 	}
 	return (new_str);
 }

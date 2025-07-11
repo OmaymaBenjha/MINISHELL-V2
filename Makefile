@@ -4,6 +4,8 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror
 RM = rm -f
 
+READLINE_PATH = /mnt/homes/oben-jha/homebrew/opt/readline
+
 INCLUDES = -I. \
            -IEXECUTION \
            -IEXECUTION/builtins \
@@ -13,9 +15,11 @@ INCLUDES = -I. \
            -ITOKENIZER \
            -IGARBAGE_COLLECTOR \
            -IHEREDOC \
-           -Itools
+           -Itools \
+           -I$(READLINE_PATH)/include 
 
-LDFLAGS = -lreadline
+
+LDFLAGS = -L$(READLINE_PATH)/lib -lreadline
 
 SRCS = main.c \
        EXECUTION/builtins_dispatch.c \
