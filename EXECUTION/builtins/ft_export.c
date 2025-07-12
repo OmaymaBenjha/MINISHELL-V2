@@ -2,13 +2,25 @@
 
 static int	print_exported_vars(char **envp)
 {
-	int	i;
+	int		i;
+	char	*equal_sign;
+	int		name_len;
 
 	i = 0;
 	while (envp && envp[i])
 	{
 		ft_putstr_fd("declare -x ", 1);
-		ft_putstr_fd(envp[i], 1);
+		equal_sign = ft_strchr(envp[i], '=');
+		if (equal_sign)
+		{
+			name_len = equal_sign - envp[i];
+			write(1, envp[i], name_len);
+			ft_putstr_fd("=\"", 1);
+			ft_putstr_fd(equal_sign + 1, 1);
+			ft_putstr_fd("\"", 1);
+		}
+		else
+			ft_putstr_fd(envp[i], 1);
 		ft_putstr_fd("\n", 1);
 		i++;
 	}

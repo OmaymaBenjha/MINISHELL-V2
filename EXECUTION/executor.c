@@ -4,6 +4,8 @@ static void	run_child(t_command *cmd, t_shell *shell)
 {
 	char	*path;
 
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 	if (handle_redirections(cmd) == -1)
 		exit(1);
 	if (!cmd->args || !cmd->args[0])
@@ -60,6 +62,9 @@ static void	execute_single_command(t_command *cmd, t_shell *shell)
 static void	child_process_pipeline(t_command *cmd, t_shell *shell,
 	int in_fd, int *pipe_fd)
 {
+
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 	if (in_fd != STDIN_FILENO)
 	{
 		dup2(in_fd, STDIN_FILENO);
