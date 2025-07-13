@@ -6,7 +6,7 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 05:41:03 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/07/13 05:45:09 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/07/13 23:30:38 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,9 +77,10 @@ static int	process_single_redir(t_redir *redir, t_shell *shell)
 	has_expanded = 0;
 	original_str = redir->del_or_fname;
 	expanded_str = expander(original_str, shell, &has_expanded);
-	if (has_expanded && !ft_strchr(original_str, '\"')
-		&& !ft_strchr(original_str, '\''))
+	if ((has_expanded && !ft_strchr(original_str, '\"')
+		&& !ft_strchr(original_str, '\'')) || (ft_strlen(expanded_str) == 0))
 	{
+	
 		split_words = ft_split(expanded_str, ' ');
 		word_count = 0;
 		while (split_words && split_words[word_count])
