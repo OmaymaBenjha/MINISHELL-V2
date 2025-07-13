@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/13 19:42:07 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/07/13 21:57:09 by oben-jha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parsing.h"
 #include "EXECUTION/execution.h"
 #include <termios.h>
@@ -33,8 +45,8 @@ static void	initialize_shell(t_shell *shell, char **envp)
 
 static void	process_input_line(char *line, t_shell *shell, struct termios *term)
 {
-	t_token		*tokens;
-	t_command	*commands;
+	t_token				*tokens;
+	t_command			*commands;
 	struct sigaction	sa;
 
 	if (*line)
@@ -46,15 +58,10 @@ static void	process_input_line(char *line, t_shell *shell, struct termios *term)
 		signal(SIGINT, SIG_IGN);
 		if (process_heredoc_pipe(commands, shell))
 		{
-			// --- MODIFIED BLOCK START ---
 			if (main_expand(commands, shell))
-			{
-				quote_remover(commands);
-				executor(commands, shell);
-			}
+				(quote_remover(commands), executor(commands, shell));
 			else
-				shell->last_exit_status = 1; // Set exit status for ambiguity error
-			// --- MODIFIED BLOCK END ---
+				shell->last_exit_status = 1;
 		}
 		tcsetattr(0, TCSANOW, term);
 		sa.sa_handler = signal_handler;
@@ -62,8 +69,7 @@ static void	process_input_line(char *line, t_shell *shell, struct termios *term)
 		sa.sa_flags = 0;
 		sigaction(SIGINT, &sa, NULL);
 	}
-	free(line);
-	gc_freed();
+	(free(line), gc_freed());
 }
 
 static void	shell_loop(t_shell *shell, struct termios *term)
