@@ -46,9 +46,15 @@ static void	process_input_line(char *line, t_shell *shell, struct termios *term)
 		signal(SIGINT, SIG_IGN);
 		if (process_heredoc_pipe(commands, shell))
 		{
-			global_expand(commands, shell);
-			quote_remover(commands);
-			executor(commands, shell);
+			// --- MODIFIED BLOCK START ---
+			if (main_expand(commands, shell))
+			{
+				quote_remover(commands);
+				executor(commands, shell);
+			}
+			else
+				shell->last_exit_status = 1; // Set exit status for ambiguity error
+			// --- MODIFIED BLOCK END ---
 		}
 		tcsetattr(0, TCSANOW, term);
 		sa.sa_handler = signal_handler;

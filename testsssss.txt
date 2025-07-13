@@ -1,0 +1,77 @@
+----------------------------------- case 1
+minishell> tools/
+minishell: tools/: is a directory
+minishell> echo $?
+127
+
+bash-3.2$ tools/
+bash: tools/: is a directory
+bash-3.2$ echo $?
+126
+
+-------------------------------- case 2
+
+minishell> 
+minishell> 
+minishell> 
+minishell> 
+minishell> 
+minishell> 
+minishell> echo $?
+0                   //expected 1
+
+
+---------------------------- case 3
+
+minishell> exit 7897897897897897855555555555
+exit
+bash-3.2$ echo $?
+227                     /expected 255
+
+---------------------------- case 4
+
+minishell> echo -n -nnnnnnnnn heeloo
+
+minishell> echo -n -nnnnnnnnn - heeloo
+heeloominishell> 
+
+
+bash-3.2$ echo -n -nnnnnnnnn - heeloo
+- heeloobash-3.2$ 
+
+------------------------- case 5
+
+minishell> $vds | $vds | $vds
+minishell: : command not found
+minishell: : command not found
+minishell: : command not found
+minishell> echo $?
+127
+
+bash-3.2$ $vds | $vds | $vds 
+bash-3.2$ echo $?
+0
+--------------------------- case 6 
+export v = sd
+
+should print :   bash: export: `=': not a valid identifier
+
+
+------------------------ case 7 
+export va="b=c   d=g  c"
+export $va 
+=====>
+va="b=c   d=g"
+b="c"
+"d=g"
+c
+
+--------------------------case 8 
+export value
+==>
+value 
+----------------------- case 9 
+ls > $unexisting_var 
+=> ambigouis redirt
+but im geting no such file or direct 
+

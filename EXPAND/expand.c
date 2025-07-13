@@ -6,7 +6,7 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 23:34:49 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/07/11 23:35:32 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/07/13 00:36:20 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static char	*extract_variable_name(const char *str)
 }
 
 static void	handle_dollar_expansion(char **new_str, const char *str, int *i,
-		t_shell *shell)
+		t_shell *shell, int *exp)
 {
 	char	*key;
 	char	*value;
@@ -61,9 +61,11 @@ static void	handle_dollar_expansion(char **new_str, const char *str, int *i,
 		*new_str = gc_strjoin(*new_str, value);
 	}
 	*i += ft_strlen(key);
+	if (value)
+		(*exp) = 1;
 }
 
-char	*expander(char *str, t_shell *shell)
+char	*expander(char *str, t_shell *shell, int *exp)
 {
 	char	*new_str;
 	int		i;
@@ -83,9 +85,11 @@ char	*expander(char *str, t_shell *shell)
 		else if (str[i] == '\"' && !in_squote)
 			in_dquote = !in_dquote;
 		if (str[i] == '$' && !in_squote)
-			handle_dollar_expansion(&new_str, str, &i, shell);
+			handle_dollar_expansion(&new_str, str, &i, shell, exp);
 		else
 			(append_char(&new_str, str[i]), i++);
 	}
 	return (new_str);
 }
+
+

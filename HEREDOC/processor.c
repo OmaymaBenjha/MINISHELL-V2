@@ -6,7 +6,7 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 23:17:17 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/07/11 23:37:26 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/07/12 23:38:40 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static char	*maybe_expand_line(char *line, bool flag, t_shell *shell)
 {
 	if (flag)
-		return (expander(line, shell));
+		return (expander(line, shell, 0));
 	else
 		return (gc_strdup(line));
 }

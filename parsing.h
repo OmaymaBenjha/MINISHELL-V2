@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing.h                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/12 23:08:26 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/07/13 05:32:59 by oben-jha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PARSING_H
 # define PARSING_H
 
@@ -96,11 +108,14 @@ int			handle_redirection(t_command *cmd, t_token **current_token);
 int			process_heredoc_pipe(t_command *cmds_head, t_shell *shell);
 
 // EXPAND PROTOTYPES
-char		*expander(char *str, t_shell *shell);
+char		*expander(char *str, t_shell *shell, int *exp);
 void		quote_remover(t_command *cmd_list);
 char		*strip_quotes(const char *str);
-void		global_expand(t_command *cmds_head, t_shell *shell);
+void		global_expand(t_command *cmds_head, t_shell *shell, int *exp);
+int			main_expand(t_command *cmds, t_shell *shell);
 char		*my_getenv(const char *name, char **env);
+char		*get_delim(char *file, t_shell *shell, int *word_count);
+
 
 // TOOLS/STRINGS PROTOTYPES
 char		*ft_strdup(char *value);
@@ -122,7 +137,7 @@ int			ft_atoi(const char *str);
 // TOOLS/CHECKERS PROTOTYPES
 int			ft_isspace(char c);
 int			is_metachar(char c);
-int			is_unsupported_metachar(char c);
+int			del_or_fnamesupported_metachar(char c);
 char		**ft_split(char const *s, char c);
 char		*ft_strchr(const char *s, int c);
 
