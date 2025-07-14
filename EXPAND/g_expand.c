@@ -22,17 +22,14 @@ static int	process_single_redir(t_redir *redir, t_shell *shell, int *ex)
 	original_str = redir->del_or_fname;
 	exp_str = expander(original_str, shell, ex);
 	if (((*ex) && !ft_strchr(original_str, '\"')
-			&& !ft_strchr(original_str, '\'')) || (ft_strlen(exp_str) == 0))
+			&& !ft_strchr(original_str, '\'')) || (ft_strlen(exp_str) == 0)
+		|| ft_strchr(exp_str, '$'))
 	{
 		split_words = ft_split(exp_str, ' ');
 		word_count = 0;
 		while (split_words && split_words[word_count])
 			word_count++;
-		if (word_count != 1)
-		{
-			(ft_putstr_fd("minishell: ", 2), ft_putstr_fd(original_str, 2));
-			return (ft_putstr_fd(": ambiguous redirect\n", 2), 0);
-		}
+		flag_redir_error(exp_str, original_str, word_count);
 		redir->del_or_fname = split_words[0];
 	}
 	else
@@ -43,21 +40,22 @@ static int	process_single_redir(t_redir *redir, t_shell *shell, int *ex)
 static void	expand_and_split_arg(char *arg, t_shell *shell, t_arg_list **head)
 {
 	int		has_expanded;
-	char	*expanded_str;
+	char	*exp_str;
 	char	**split_words;
 	int		j;
 
 	has_expanded = 0;
-	expanded_str = expander(arg, shell, &has_expanded);
-	if (has_expanded && !ft_strchr(arg, '\"') && !ft_strchr(arg, '\''))
+	exp_str = expander(arg, shell, &has_expanded);
+	if ((has_expanded && !ft_strchr(arg, '\"') && !ft_strchr(arg, '\''))
+		|| (ft_strlen(exp_str) == 0))
 	{
-		split_words = ft_split(expanded_str, ' ');
+		split_words = ft_split(exp_str, ' ');
 		j = 0;
 		while (split_words && split_words[j])
 			add_arg_to_list(head, split_words[j++]);
 	}
 	else
-		add_arg_to_list(head, expanded_str);
+		add_arg_to_list(head, exp_str);
 }
 
 static int	expand_and_check_redirs(t_command *cmd, t_shell *shell)

@@ -6,11 +6,23 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 10:57:02 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/07/14 15:39:41 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/07/14 19:38:52 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
+
+int	flag_redir_error(char *exp, char *org, int count)
+{
+	if (ft_strchr(exp, '$') && (count == 1))
+		return (ft_putstr_fd("minishell: : No such file or directory\n", 2), 0);
+	if (count != 1)
+	{
+		(ft_putstr_fd("minishell: ", 2), ft_putstr_fd(org, 2));
+		return (ft_putstr_fd(": ambiguous redirect\n", 2), 0);
+	}
+	return (1);
+}
 
 void	add_arg_to_list(t_arg_list **head, char *arg_val)
 {

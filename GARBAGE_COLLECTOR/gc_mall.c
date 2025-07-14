@@ -70,18 +70,20 @@ char	*gc_substr(char const *s, unsigned int start, size_t len)
 	return (new_str);
 }
 
-char	*gc_strjoin(char const *s1, char const *s2)
+void	gc_freed(void)
 {
-	char	*new_str;
+	t_gc_node	*current;
+	t_gc_node	*tmp;
+	t_gc_node	**head;
 
-	if (!s1 || !s2)
-		return (NULL);
-	new_str = ft_strjoin(s1, s2);
-	if (!new_str)
+	head = get_gc_head_instance();
+	current = *head;
+	while (current != NULL)
 	{
-		perror("substr failed!");
-		exit(EXIT_FAILURE);
+		tmp = current;
+		current = current->next;
+		free(tmp->pt);
+		free(tmp);
 	}
-	gc_add_pt(new_str);
-	return (new_str);
+	*head = NULL;
 }
