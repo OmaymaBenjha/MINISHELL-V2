@@ -74,4 +74,8 @@ value
 ls > $unexisting_var 
 => ambigouis redirt
 but im geting no such file or direct 
-
+--------------------- case 10
+minishell> << t << y | << o
+heredoc> t
+heredoc> y
+heredoc> i do ctrl + c and it does not exit
