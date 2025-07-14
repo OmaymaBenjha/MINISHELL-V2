@@ -51,7 +51,7 @@ void	execute_builtin(t_command *cmd, t_shell *shell)
 	else if (ft_strcmp(cmd_name, "cd") == 0)
 		status = ft_cd(cmd->args, shell);
 	else if (ft_strcmp(cmd_name, "pwd") == 0)
-		status = ft_pwd();
+		status = ft_pwd(shell);
 	else if (ft_strcmp(cmd_name, "export") == 0)
 		status = ft_export(cmd->args, shell);
 	else if (ft_strcmp(cmd_name, "unset") == 0)

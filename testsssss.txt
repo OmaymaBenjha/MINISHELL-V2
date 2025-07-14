@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ----------------------------------- case 1
 minishell> tools/
 minishell: tools/: is a directory
