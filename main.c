@@ -1,18 +1,7 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/13 19:42:07 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/07/13 21:57:09 by oben-jha         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "parsing.h"
 #include "EXECUTION/execution.h"
 #include <termios.h>
+#include <stdlib.h>
 
 volatile sig_atomic_t	g_signal_received = 0;
 
@@ -31,9 +20,19 @@ static void	signal_handler(int sig)
 static void	initialize_shell(t_shell *shell, char **envp)
 {
 	struct sigaction	sa;
+	char				cwd_buffer[1024];
 
 	shell->envp = dupenv(envp);
 	shell->last_exit_status = 0;
+	if (getcwd(cwd_buffer, sizeof(cwd_buffer)) != NULL)
+	{
+		set_env("PWD", cwd_buffer, shell);
+	}
+	else
+	{
+		perror("minishell: startup error");
+		exit(1);
+	}
 	g_signal_received = 0;
 	rl_catch_signals = 0;
 	sa.sa_handler = signal_handler;
