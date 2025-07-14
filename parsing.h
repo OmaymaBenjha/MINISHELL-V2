@@ -6,7 +6,7 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 23:08:26 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/07/13 05:32:59 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/07/14 15:11:33 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,19 @@ typedef struct s_command
 	struct s_command	*next_piped_command;
 }	t_command;
 
+typedef struct s_arg_list
+{
+	char				*arg;
+	struct s_arg_list	*next;
+}	t_arg_list;
+
+typedef struct s_exp_data
+{
+	t_shell				*shell;
+	int					*flag;
+	struct	s_exp_data	*next;
+} t_exp_data;
+
 void		gc_add_pt(void *pt);
 void		*gc_mall(size_t size);
 char		*gc_strdup(char *str);
@@ -114,7 +127,10 @@ char		*strip_quotes(const char *str);
 void		global_expand(t_command *cmds_head, t_shell *shell, int *exp);
 int			main_expand(t_command *cmds, t_shell *shell);
 char		*my_getenv(const char *name, char **env);
-char		*get_delim(char *file, t_shell *shell, int *word_count);
+void		add_arg_to_list(t_arg_list **head, char *arg_val);
+char		**convert_list_to_array(t_arg_list *head);
+void		init_data(t_exp_data **data_ptr, t_shell *shell, int *exp);
+
 
 
 // TOOLS/STRINGS PROTOTYPES

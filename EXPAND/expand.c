@@ -6,7 +6,7 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 23:34:49 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/07/13 00:36:20 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/07/14 15:38:48 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@ static char	*extract_variable_name(const char *str)
 	return (gc_substr(str, 0, i));
 }
 
-static void	handle_dollar_expansion(char **new_str, const char *str, int *i,
-		t_shell *shell, int *exp)
+static void	handle_dollar_expansion(char **new_str, const char *str,
+		t_exp_data *data, int *i)
 {
 	char	*key;
 	char	*value;
@@ -45,7 +45,7 @@ static void	handle_dollar_expansion(char **new_str, const char *str, int *i,
 	(*i)++;
 	if (str[*i] == '?')
 	{
-		*new_str = gc_strjoin(*new_str, gc_itoa(shell->last_exit_status));
+		*new_str = gc_strjoin(*new_str, gc_itoa(data->shell->last_exit_status));
 		(*i)++;
 		return ;
 	}
@@ -55,22 +55,21 @@ static void	handle_dollar_expansion(char **new_str, const char *str, int *i,
 		append_char(new_str, '$');
 		return ;
 	}
-	value = my_getenv(key, shell->envp);
+	value = my_getenv(key, data->shell->envp);
 	if (value)
-	{
 		*new_str = gc_strjoin(*new_str, value);
-	}
 	*i += ft_strlen(key);
 	if (value)
-		(*exp) = 1;
+		*(data->flag) = 1;
 }
 
 char	*expander(char *str, t_shell *shell, int *exp)
 {
-	char	*new_str;
-	int		i;
-	bool	in_dquote;
-	bool	in_squote;
+	char		*new_str;
+	int			i;
+	bool		in_dquote;
+	bool		in_squote;
+	t_exp_data	*data;
 
 	if (!str)
 		return (NULL);
@@ -78,6 +77,7 @@ char	*expander(char *str, t_shell *shell, int *exp)
 	i = 0;
 	in_dquote = false;
 	in_squote = false;
+	init_data(&data, shell, exp);
 	while (str[i])
 	{
 		if (str[i] == '\'' && !in_dquote)
@@ -85,11 +85,9 @@ char	*expander(char *str, t_shell *shell, int *exp)
 		else if (str[i] == '\"' && !in_squote)
 			in_dquote = !in_dquote;
 		if (str[i] == '$' && !in_squote)
-			handle_dollar_expansion(&new_str, str, &i, shell, exp);
+			handle_dollar_expansion(&new_str, str, data, &i);
 		else
 			(append_char(&new_str, str[i]), i++);
 	}
 	return (new_str);
 }
-
-

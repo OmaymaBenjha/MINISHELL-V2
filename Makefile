@@ -36,9 +36,11 @@ SRCS = main.c \
        EXECUTION/builtins/ft_unset.c \
        EXPAND/expand.c \
        EXPAND/g_expand.c \
+       EXPAND/helper.c \
        EXPAND/quotes_removal.c \
        EXPAND/utils.c \
        GARBAGE_COLLECTOR/gc_mall.c \
+       GARBAGE_COLLECTOR/gc_mall2.c \
        HEREDOC/processor.c \
        PARSER/error_handler.c \
        PARSER/processor.c \
