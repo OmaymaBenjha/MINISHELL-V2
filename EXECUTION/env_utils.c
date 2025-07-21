@@ -117,3 +117,33 @@ int	set_env(const char *name, const char *value, t_shell *shell)
 	shell->envp = new_envp;
 	return (0);
 }
+
+char	**get_filtered_envp(char **envp)
+{
+	int		i;
+	int		j;
+	int		count;
+	char	**filtered_envp;
+
+	count = 0;
+	i = 0;
+	while (envp[i])
+	{
+		if (ft_strchr(envp[i], '='))
+			count++;
+		i++;
+	}
+	filtered_envp = malloc(sizeof(char *) * (count + 1));
+	if (!filtered_envp)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (envp[i])
+	{
+		if (ft_strchr(envp[i], '='))
+			filtered_envp[j++] = envp[i];
+		i++;
+	}
+	filtered_envp[j] = NULL;
+	return (filtered_envp);
+}

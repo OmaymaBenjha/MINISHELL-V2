@@ -15,6 +15,7 @@ static int	is_directory(const char *path)
 	close(fd);
 	return (0);
 }
+
 static char	*get_path_from_env(char **envp)
 {
 	int	i;
@@ -58,10 +59,14 @@ static char	*check_absolute_path(char *cmd)
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(cmd, 2);
 		ft_putstr_fd(": is a directory\n", 2);
+		printf("is directory");
 		return (NULL);
 	}
 	if (access(cmd, X_OK) == 0)
+	{
+		printf("could not access");
 		return (gc_strdup(cmd));
+	}
 	ft_putstr_fd("minishell: ", 2);
 	perror(cmd);
 	return (NULL);

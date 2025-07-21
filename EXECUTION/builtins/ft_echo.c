@@ -1,4 +1,5 @@
 #include "builtins.h"
+#include <stdio.h>
 
 static int	check_n_option(char *arg)
 {
@@ -28,12 +29,12 @@ int	ft_echo(char **args)
 	}
 	while (args[i])
 	{
-		ft_putstr_fd(args[i], 1);
+		printf("%s", args[i]);
 		if (args[i + 1])
-			ft_putstr_fd(" ", 1);
+			printf(" ");
 		i++;
 	}
 	if (newline_flag)
-		ft_putstr_fd("\n", 1);
+		printf("\n");
 	return (0);
 }

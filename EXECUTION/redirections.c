@@ -3,7 +3,7 @@
 static int	handle_input_redir(t_redir *redir)
 {
 	int	fd;
-	
+
 	if (redir->type == REDIR_INPUT)
 	{
 		fd = open(redir->del_or_fname, O_RDONLY);
@@ -44,26 +44,44 @@ static int	handle_output_redir(t_redir *redir)
 	close(fd);
 	return (0);
 }
+int handle_input_redirections(t_command *cmd)
+{
+    t_redir *redir = cmd->redirections;
+    while (redir)
+    {
+        if (redir->type == REDIR_INPUT || redir->type == REDIR_HEREDOC)
+        {
+            if (handle_input_redir(redir) == -1)
+                return (-1);
+        }
+        redir = redir->next;
+    }
+    return (0);
+}
+
+int handle_output_redirections(t_command *cmd)
+{
+    t_redir *redir = cmd->redirections;
+    while (redir)
+    {
+        if (redir->type == REDIR_OUTPUT_TRUNC || redir->type == REDIR_OUTPUT_APPEND)
+        {
+            if (handle_output_redir(redir) == -1)
+                return (-1);
+        }
+        redir = redir->next;
+    }
+    return (0);
+}
 
 int	handle_redirections(t_command *cmd)
 {
-	t_redir	*redir;
+	if (handle_input_redirections(cmd) == -1)
+        return (-1);
 
-	redir = cmd->redirections;
-	while (redir)
+    if (handle_output_redirections(cmd) == -1)
 	{
-		if (redir->type == REDIR_INPUT || redir->type == REDIR_HEREDOC)
-		{
-			if (handle_input_redir(redir) == -1)
-				return (-1);
-		}
-		else if (redir->type == REDIR_OUTPUT_TRUNC
-			|| redir->type == REDIR_OUTPUT_APPEND)
-		{
-			if (handle_output_redir(redir) == -1)
-				return (-1);
-		}
-		redir = redir->next;
+        return (-1);
 	}
 	return (0);
 }
@@ -80,7 +98,7 @@ int	wait_for_children(pid_t last_pid)
 {
 	int	status;
 	int	exit_status;
-	int	pid;
+	int	term_sig;
 
 	if (last_pid == -1)
 		return (1);
@@ -90,12 +108,14 @@ int	wait_for_children(pid_t last_pid)
 		exit_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
 	{
-		exit_status = 128 + WTERMSIG(status);
-		if (WTERMSIG(status) == SIGINT)
+		term_sig = WTERMSIG(status);
+		exit_status = 128 + term_sig;
+		if (term_sig == SIGQUIT)
+			ft_putstr_fd("Quit (core dumped)\n", 2);
+		else if (term_sig == SIGINT)
 			ft_putstr_fd("\n", 2);
 	}
-	pid = 0;
-	while (pid != -1)
-		pid = wait(NULL);
+	while (wait(NULL) != -1)
+		;
 	return (exit_status);
 }

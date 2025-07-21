@@ -15,5 +15,8 @@ char	*find_path(char *cmd, char **envp);
 int		is_builtin(char *cmd);
 void	execute_builtin(t_command *cmd, t_shell *shell);
 int		is_parent_builtin(char *cmd);
+int	    handle_input_redirections(t_command *cmd);
+int	    handle_output_redirections(t_command *cmd);
+char	**get_filtered_envp(char **envp);
 
 #endif
