@@ -6,7 +6,7 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 16:26:03 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/07/14 16:26:16 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/07/24 17:15:00 by Gemini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ static void	process_input_line(char *line, t_shell *shell, struct termios *term)
 	commands = parser(tokens);
 	if (commands)
 	{
-		signal(SIGINT, SIG_IGN);
 		if (process_heredoc_pipe(commands, shell))
 		{
 			if (main_expand(commands, shell))
