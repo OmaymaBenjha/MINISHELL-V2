@@ -17,7 +17,16 @@ static void	heredoc_sigint_handler(int sig)
 	(void)sig;
 	exit(130);
 }
+static char	*maybe_expand_line(char *line, bool flag, t_shell *shell)
+{
+	int exp;
 
+	exp = 0;
+	if (flag)
+		return (expander(line, shell, &exp));
+	else
+		return (gc_strdup(line));
+}
 static void	child_heredoc_routine(int *pipe_fd, t_redir *redir, t_shell *shell)
 {
 	char	*line;
@@ -37,10 +46,8 @@ static void	child_heredoc_routine(int *pipe_fd, t_redir *redir, t_shell *shell)
 				free(line);
 			break ;
 		}
-		if (redir->expand_in_heredoc)
-			processed_line = expander(line, shell, 0);
-		else
-			processed_line = gc_strdup(line);
+		processed_line = maybe_expand_line(line,
+				redir->expand_in_heredoc, shell);
 		write(pipe_fd[1], processed_line, ft_strlen(processed_line));
 		write(pipe_fd[1], "\n", 1);
 		free(line);
