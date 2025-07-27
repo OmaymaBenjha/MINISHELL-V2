@@ -25,6 +25,7 @@ static int	process_single_redir(t_redir *redir, t_shell *shell, int *ex)
 			&& !ft_strchr(original_str, '\'')) || (ft_strlen(exp_str) == 0)
 		|| ft_strchr(exp_str, '$'))
 	{
+		
 		split_words = ft_split(exp_str, ' ');
 		word_count = 0;
 		while (split_words && split_words[word_count])
@@ -37,7 +38,7 @@ static int	process_single_redir(t_redir *redir, t_shell *shell, int *ex)
 	return (1);
 }
 
-static void	expand_and_split_arg(char *arg, t_shell *shell, t_arg_list **head)
+static void	expand_and_split_arg(char *arg, t_shell *shell, t_arg_list **head, bool sp)
 {
 	int		has_expanded;
 	char	*exp_str;
@@ -46,8 +47,8 @@ static void	expand_and_split_arg(char *arg, t_shell *shell, t_arg_list **head)
 
 	has_expanded = 0;
 	exp_str = expander(arg, shell, &has_expanded);
-	if ((has_expanded && !ft_strchr(arg, '\"') && !ft_strchr(arg, '\''))
-		|| (ft_strlen(exp_str) == 0))
+	if (((has_expanded && !ft_strchr(arg, '\"') && !ft_strchr(arg, '\''))
+		|| (ft_strlen(exp_str) == 0)) || (has_expanded && sp))
 	{
 		split_words = ft_split(exp_str, ' ');
 		j = 0;
@@ -77,23 +78,48 @@ static int	expand_and_check_redirs(t_command *cmd, t_shell *shell)
 	return (1);
 }
 
+int is_valid_ass(const char *arg)
+{
+    int i;
+
+    char *equal_sign = ft_strchr(arg, '=');
+    if (equal_sign == NULL)
+        return 0;
+    if (equal_sign == arg)
+        return 0;
+    if (!ft_isalpha(arg[0]) && arg[0] != '_')
+        return 0;
+    i = 1;
+    while (&arg[i] < equal_sign)
+    {
+        if (!ft_isalnum(arg[i]) && arg[i] != '_')
+            return 0;
+        i++;
+    }
+    return 1;
+}
 static void	rebuild_args_with_splitting(t_command *cmd, t_shell *shell)
 {
-	t_arg_list	*arg_head;
-	int			i;
+t_arg_list	*arg_head;
+int			i;
+bool		to_split;
 
-	if (!cmd->args)
-		return ;
-	arg_head = NULL;
-	i = 0;
-	while (cmd->args[i])
-	{
-		expand_and_split_arg(cmd->args[i], shell, &arg_head);
-		i++;
-	}
-	cmd->args = convert_list_to_array(arg_head);
+if (!cmd->args)
+	return ;
+arg_head = NULL;
+i = 0;
+
+while (cmd->args[i])
+{
+	to_split = false;
+	if (ft_strncmp("export", cmd->args[0],  ft_strlen(cmd->args[0]))
+		|| !is_valid_ass(cmd->args[i]))
+			to_split = true;		
+	expand_and_split_arg(cmd->args[i], shell, &arg_head, to_split);
+	i++;
 }
-
+cmd->args = convert_list_to_array(arg_head);
+}
 int	main_expand(t_command *cmds, t_shell *shell)
 {
 	t_command	*cmd;
