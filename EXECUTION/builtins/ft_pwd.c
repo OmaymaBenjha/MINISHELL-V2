@@ -4,7 +4,7 @@ int	ft_pwd(t_shell *shell)
 {
 	char	*pwd_val;
 
-	pwd_val = my_getenv("PWD", shell->envp);
+	pwd_val = my_getenv("PWD", shell->envp);		//hadi kadepandi 3la l 'env , lenv i9dro unset 
 	if (pwd_val)
 	{
 		ft_putstr_fd(pwd_val, 1);

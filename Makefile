@@ -1,7 +1,7 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror  
 RM = rm -f
 
 READLINE_PATH = /mnt/homes/oben-jha/homebrew/opt/readline

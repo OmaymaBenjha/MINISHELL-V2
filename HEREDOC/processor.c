@@ -64,11 +64,12 @@ static int	parent_wait_heredoc(pid_t pid, int *pipe_fd,
 	close(pipe_fd[1]);
 	waitpid(pid, &status, 0);
 	redir->heredoc_fd = pipe_fd[0];
-	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+	if ((WIFEXITED(status) && WEXITSTATUS(status) == 130)
+		|| (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT))
 	{
 		close(pipe_fd[0]);
 		redir->heredoc_fd = -1;
-		shell->last_exit_status = 130;
+		shell->last_exit_status = 1;
 		ft_putstr_fd("\n", 2);
 		return (0);
 	}
@@ -81,10 +82,20 @@ static int	handle_single_heredoc(t_redir *redir, t_shell *shell)
 	pid_t	pid;
 
 	if (pipe(pipe_fd) == -1)
-		return (perror("pipe"), 0);
+	{
+		perror("minishell: pipe");
+		shell->last_exit_status = 1;
+		return (0);
+	}
 	pid = fork();
 	if (pid == -1)
-		return (perror("fork"), 0);
+	{
+		perror("minishell: fork");
+		close(pipe_fd[0]);
+		close(pipe_fd[1]);
+		shell->last_exit_status = 1;
+		return (0);
+	}
 	if (pid == 0)
 		child_heredoc_routine(pipe_fd, redir, shell);
 	return (parent_wait_heredoc(pid, pipe_fd, redir, shell));
@@ -92,23 +103,30 @@ static int	handle_single_heredoc(t_redir *redir, t_shell *shell)
 
 int	process_heredoc_pipe(t_command *cmds_head, t_shell *shell)
 {
-	t_command	*cmd;
-	t_redir		*redir;
+	t_command			*cmd;
+	t_redir				*redir;
+	struct sigaction	sa_orig;
+	struct sigaction	sa_ign;
+	int					ret;
 
+	ret = 1;
+	sa_ign.sa_handler = SIG_IGN;
+	sigemptyset(&sa_ign.sa_mask);
+	sa_ign.sa_flags = 0;
+	sigaction(SIGINT, &sa_ign, &sa_orig);
 	cmd = cmds_head;
-	while (cmd)
+	while (cmd && ret == 1)
 	{
 		redir = cmd->redirections;
-		while (redir)
+		while (redir && ret == 1)
 		{
 			if (redir->type == REDIR_HEREDOC)
-			{
 				if (!handle_single_heredoc(redir, shell))
-					return (0);
-			}
+					ret = 0;
 			redir = redir->next;
 		}
 		cmd = cmd->next_piped_command;
 	}
-	return (1);
+	sigaction(SIGINT, &sa_orig, NULL);
+	return (ret);
 }

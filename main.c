@@ -68,6 +68,7 @@ static void	process_input_line(char *line, t_shell *shell, struct termios *term)
 	{
 		if (process_heredoc_pipe(commands, shell))
 		{
+			
 			if (main_expand(commands, shell))
 				(quote_remover(commands), executor(commands, shell));
 			else
@@ -78,6 +79,11 @@ static void	process_input_line(char *line, t_shell *shell, struct termios *term)
 		sigemptyset(&sa.sa_mask);
 		sa.sa_flags = 0;
 		sigaction(SIGINT, &sa, NULL);
+	}
+	else 
+	{
+		int old = shell->last_exit_status;
+		shell->last_exit_status = old;
 	}
 	(free(line), gc_freed());
 }
@@ -90,7 +96,7 @@ static void	shell_loop(t_shell *shell, struct termios *term)
 	{
 		if (g_signal_received == SIGINT)
 		{
-			shell->last_exit_status = 130;
+			shell->last_exit_status = 1;
 			g_signal_received = 0;
 		}
 		line = readline("minishell> ");

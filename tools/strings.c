@@ -125,7 +125,6 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	r[i] = '\0';
 	return (r);
 }
-// PASTE THIS CODE AT THE END OF YOUR tools/strings.c FILE
 
 static size_t	count_words(char const *s, char c)
 {

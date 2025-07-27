@@ -53,7 +53,9 @@ static void	run_child(t_command *cmd, t_shell *shell)
 	ft_putstr_fd(strerror(errno), 2);
 	ft_putstr_fd("\n", 2);
 	if (errno == EACCES)
+	{
 		exit(126);
+	}
 	exit(1);
 }
 static void	child_process_pipeline(t_command *cmd, t_shell *shell,
