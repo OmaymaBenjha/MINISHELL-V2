@@ -6,7 +6,7 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 23:08:26 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/07/14 18:21:56 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/07/29 14:32:02 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ typedef struct s_exp_data
 	t_shell				*shell;
 	int					*flag;
 	struct	s_exp_data	*next;
+	bool				exp_f;
 } t_exp_data;
 
 void		gc_add_pt(void *pt);
@@ -131,7 +132,6 @@ void		add_arg_to_list(t_arg_list **head, char *arg_val);
 char		**convert_list_to_array(t_arg_list *head);
 void		init_data(t_exp_data **data_ptr, t_shell *shell, int *exp);
 int			flag_redir_error(char *exp, char *org, int count);
-
 
 // TOOLS/STRINGS PROTOTYPES
 char		*ft_strdup(char *value);

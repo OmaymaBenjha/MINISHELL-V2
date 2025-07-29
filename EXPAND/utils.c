@@ -36,7 +36,7 @@ static size_t	count_stripped_len(const char *str)
 	return (len);
 }
 
-static void	perform_strip_loop(const char *str, char *cleaned)
+static void	strip_loop(const char *str, char *cleaned)
 {
 	size_t	i;
 	size_t	j;
@@ -69,6 +69,6 @@ char	*strip_quotes(const char *str)
 	cleaned = gc_mall(count_stripped_len(str) + 1);
 	if (!cleaned)
 		return (NULL);
-	perform_strip_loop(str, cleaned);
+	strip_loop(str, cleaned);
 	return (cleaned);
 }

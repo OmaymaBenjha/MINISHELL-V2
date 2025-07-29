@@ -94,12 +94,12 @@ static void	shell_loop(t_shell *shell, struct termios *term)
 
 	while (1)
 	{
+		line = readline("minishell> ");
 		if (g_signal_received == SIGINT)
 		{
 			shell->last_exit_status = 1;
 			g_signal_received = 0;
 		}
-		line = readline("minishell> ");
 		if (!line)
 		{
 			ft_putstr_fd("exit\n", 1);

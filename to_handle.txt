@@ -25,3 +25,14 @@ minishell> unexpected identiifier
 
 ===============================================
 
+╭─oben-jha@e3r4p3 ~/Desktop/projet minishell/minishell-v2 ‹main●› 
+╰─$ ./minishell 
+minishell> touch ls
+minishell> ./ls
+minishell: ./ls: Permission denied
+minishell> chmod +x ./ls
+minishell> ./ls
+minishell: ./ls: Exec format error
+could not accessminishell> 
+
+../minishell/ls    no message
