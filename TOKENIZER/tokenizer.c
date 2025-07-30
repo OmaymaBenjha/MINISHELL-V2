@@ -27,6 +27,8 @@ t_token	*tokenizer(char *line)
 			i++;
 			continue ;
 		}
+		if (line[i] == '$' && (line[i + 1] == '\"' || line[i + 1] == '\''))
+			i++;
 		if (is_metachar(line[i]))
 			new_token = get_operator_token(line, &i);
 		else

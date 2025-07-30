@@ -49,6 +49,11 @@ static void	handle_dollar_expansion(char **new_str, const char *str,
 		(*i)++;
 		return ;
 	}
+	if (str[*i] == '\'' || str[*i] == '\"' || str[*i] == '\0')
+    {
+        append_char(new_str, '$');
+        return;
+    }
 	key = extract_variable_name(&str[*i]);
 	if (!key || *key == '\0')
 	{
@@ -56,8 +61,10 @@ static void	handle_dollar_expansion(char **new_str, const char *str,
 		return ;
 	}
 	value = my_getenv(key, data->shell->envp);
-	if (value)
+	if (value )
 		*new_str = gc_strjoin(*new_str, value);
+	else 
+		*new_str = NULL;
 	*i += ft_strlen(key);
 	if (value)
 		*(data->flag) = 1;
