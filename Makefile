@@ -39,6 +39,7 @@ SRCS = main.c \
        EXPAND/helper.c \
        EXPAND/quotes_removal.c \
        EXPAND/utils.c \
+       EXPAND/utils_1.c \
        GARBAGE_COLLECTOR/gc_mall.c \
        GARBAGE_COLLECTOR/gc_mall2.c \
        HEREDOC/processor.c \
