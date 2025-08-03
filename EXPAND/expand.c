@@ -6,7 +6,7 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 23:34:49 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/07/27 19:20:26 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/07/30 23:02:06 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,9 +62,10 @@ static void	handle_dollar_expansion(char **new_str, const char *str,
 	}
 	value = my_getenv(key, data->shell->envp);
 	if (value )
-		*new_str = gc_strjoin(*new_str, value);
-	else 
-		*new_str = NULL;
+	{
+		char *locked_value = lock_quotes(value);
+		*new_str = gc_strjoin(*new_str, locked_value);
+	}	
 	*i += ft_strlen(key);
 	if (value)
 		*(data->flag) = 1;

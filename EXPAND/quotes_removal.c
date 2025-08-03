@@ -22,13 +22,19 @@ static void	clean_quotes_in_args(t_command *cmd)
 		return ;
 	while (cmd->args[i])
 	{
+		// 1. Remove the literal quotes that were typed on the command line.
+		//    The "locked" quotes (from expansion) will be ignored and survive.
 		stripped = strip_quotes(cmd->args[i]);
+		
 		if (stripped)
+		{
+			// 2. Unlock the protected quotes, turning placeholders back into real ones.
+			unlock_quotes(stripped);
 			cmd->args[i] = stripped;
+		}
 		i++;
 	}
 }
-
 static void	clean_quotes_in_redirs(t_command *cmd)
 {
 	t_redir	*redir;

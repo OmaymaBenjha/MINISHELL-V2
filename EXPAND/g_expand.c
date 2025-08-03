@@ -51,35 +51,30 @@ static bool is_valid_assignment_for_no_split(const char *arg)
     return (true);
 }
 
-static void expand_and_split_arg(char *arg, t_shell *shell, t_arg_list **head, bool prevent_splitting)
+static void expand_and_split_arg(char *arg, t_shell *shell, t_arg_list **head, bool spl)
 {
 	int		has_expanded;
 	char	*exp_str;
-	bool	should_split;
+	char	**sp_words;
+	int		j;
 
 	has_expanded = 0;
 	exp_str = expander(arg, shell, &has_expanded);
-
-	should_split = has_expanded
-		&& !is_fully_quoted(arg)
-		&& !prevent_splitting;
-
-	if (should_split)
+	if (exp_str[0] == '\0')
+		return ;
+	if (has_expanded && !is_fully_quoted(arg) && !spl)
 	{
-		char **split_words = ft_split(exp_str, ' ');
-		int j = 0;
-		if (!split_words || !split_words[0])
-			add_arg_to_list(head, gc_strdup(""));
-		else
+		sp_words = ft_split(exp_str, ' ');
+		j = 0;
+		while (sp_words && sp_words[j])
 		{
-			while (split_words && split_words[j])
-				add_arg_to_list(head, split_words[j++]);
+			if (sp_words[j][0] != '\0')
+				add_arg_to_list(head, sp_words[j]);
+			j++;
 		}
 	}
 	else
-	{
 		add_arg_to_list(head, exp_str);
-	}
 }
 
 static void rebuild_args_with_splitting(t_command *cmd, t_shell *shell)
@@ -87,23 +82,18 @@ static void rebuild_args_with_splitting(t_command *cmd, t_shell *shell)
 	t_arg_list	*arg_head;
 	int			i;
 	bool		is_literal_export;
+	bool		prevent_splitting_for_this_arg;
 
 	if (!cmd->args || !cmd->args[0])
 		return;
-
 	arg_head = NULL;
 	is_literal_export = (ft_strcmp(cmd->args[0], "export") == 0);
-
 	i = 0;
 	while (cmd->args[i])
 	{
-		bool prevent_splitting_for_this_arg = false;
-		
+		prevent_splitting_for_this_arg = false;
 		if (is_literal_export && i > 0 && is_valid_assignment_for_no_split(cmd->args[i]))
-		{
 			prevent_splitting_for_this_arg = true;
-		}
-
 		expand_and_split_arg(cmd->args[i], shell, &arg_head, prevent_splitting_for_this_arg);
 		i++;
 	}
