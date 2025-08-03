@@ -6,7 +6,7 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 23:08:26 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/07/29 14:32:02 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/08/03 14:21:00 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,15 +128,17 @@ int			process_heredoc_pipe(t_command *cmds_head, t_shell *shell);
 char		*expander(char *str, t_shell *shell, int *exp);
 void		quote_remover(t_command *cmd_list);
 char		*strip_quotes(const char *str);
-void		global_expand(t_command *cmds_head, t_shell *shell, int *exp);
 int			main_expand(t_command *cmds, t_shell *shell);
 char		*my_getenv(const char *name, char **env);
 void		add_arg_to_list(t_arg_list **head, char *arg_val);
 char		**convert_list_to_array(t_arg_list *head);
 void		init_data(t_exp_data **data_ptr, t_shell *shell, int *exp);
 int			flag_redir_error(char *exp, char *org, int count);
-char	*lock_quotes(const char *value);
-void	unlock_quotes(char *arg);
+char		*lock_quotes(const char *value);
+void		unlock_quotes(char *arg);
+bool		is_fully_quoted(const char *arg);
+bool		is_valid_ass(const char *arg, int *is_quo);
+
 // TOOLS/STRINGS PROTOTYPES
 char		*ft_strdup(char *value);
 int			ft_strncmp(const char *s1, const char *s2, size_t n);
@@ -152,6 +154,8 @@ void		executor(t_command *commands, t_shell *shell);
 char		**dupenv(char **envp);
 void		free_env(char **envp);
 int			ft_atoi(const char *str);
+int			is_void(char *s);
+
 
 
 // TOOLS/CHECKERS PROTOTYPES
