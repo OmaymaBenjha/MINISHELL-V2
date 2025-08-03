@@ -76,6 +76,8 @@ char	*find_path(char *cmd, char **envp)
 	char	**paths;
 	char	*path_env;
 
+	if(access(cmd, X_OK) == 0)
+		return cmd;
 	if (!cmd || *cmd == '\0')
 	{
 		ft_putstr_fd("minishell: : command not found\n", 2);
