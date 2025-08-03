@@ -13,45 +13,7 @@
 #include "parsing.h"
 #include <stdbool.h>
 
-static bool is_fully_quoted(const char *arg)
-{
-    size_t len;
-
-    if (!arg)
-        return (false);
-    len = ft_strlen(arg);
-    if (len < 2)
-        return (false);
-    if (arg[0] == '\"' && arg[len - 1] == '\"')
-        return (true);
-    if (arg[0] == '\'' && arg[len - 1] == '\'')
-        return (true);
-    return (false);
-}
-
-static bool is_valid_assignment_for_no_split(const char *arg)
-{
-    char *equal_sign;
-    int i;
-
-    if (!arg)
-        return (false);
-    equal_sign = ft_strchr(arg, '=');
-    if (equal_sign == NULL || equal_sign == arg)
-        return (false);
-    if (!ft_isalpha(arg[0]) && arg[0] != '_')
-        return (false);
-    i = 1;
-    while (&arg[i] < equal_sign)
-    {
-        if (!ft_isalnum(arg[i]) && arg[i] != '_')
-            return (false);
-        i++;
-    }
-    return (true);
-}
-
-static void expand_and_split_arg(char *arg, t_shell *shell, t_arg_list **head, bool spl)
+static void ex_sp(char *arg, t_shell *shell, t_arg_list **head, bool spl)
 {
 	int		has_expanded;
 	char	*exp_str;
@@ -66,7 +28,7 @@ static void expand_and_split_arg(char *arg, t_shell *shell, t_arg_list **head, b
 	{
 		sp_words = ft_split(exp_str, ' ');
 		j = 0;
-		while (sp_words && sp_words[j])
+		while (sp_words && sp_words[j] && !is_void(sp_words[j]))
 		{
 			if (sp_words[j][0] != '\0')
 				add_arg_to_list(head, sp_words[j]);
@@ -81,20 +43,22 @@ static void rebuild_args_with_splitting(t_command *cmd, t_shell *shell)
 {
 	t_arg_list	*arg_head;
 	int			i;
-	bool		is_literal_export;
+	bool		is_export;
 	bool		prevent_splitting_for_this_arg;
+	int 		is_quoted_key;
 
 	if (!cmd->args || !cmd->args[0])
 		return;
 	arg_head = NULL;
-	is_literal_export = (ft_strcmp(cmd->args[0], "export") == 0);
+	is_export = (ft_strcmp(cmd->args[0], "export") == 0);
 	i = 0;
+	is_quoted_key = 0;
 	while (cmd->args[i])
 	{
 		prevent_splitting_for_this_arg = false;
-		if (is_literal_export && i > 0 && is_valid_assignment_for_no_split(cmd->args[i]))
+		if ((i > 0 && is_valid_ass(cmd->args[i], &is_quoted_key) && is_export) || is_quoted_key)
 			prevent_splitting_for_this_arg = true;
-		expand_and_split_arg(cmd->args[i], shell, &arg_head, prevent_splitting_for_this_arg);
+		ex_sp(cmd->args[i], shell, &arg_head, prevent_splitting_for_this_arg);
 		i++;
 	}
 	cmd->args = convert_list_to_array(arg_head);
