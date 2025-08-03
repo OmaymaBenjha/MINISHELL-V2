@@ -23,6 +23,9 @@
 # include <signal.h>
 # include <sys/wait.h>
 
+# define SQUOTE_LOCK '\x03'
+# define DQUOTE_LOCK '\x04'
+
 typedef struct s_shell
 {
 	char	**envp;
@@ -132,7 +135,8 @@ void		add_arg_to_list(t_arg_list **head, char *arg_val);
 char		**convert_list_to_array(t_arg_list *head);
 void		init_data(t_exp_data **data_ptr, t_shell *shell, int *exp);
 int			flag_redir_error(char *exp, char *org, int count);
-
+char	*lock_quotes(const char *value);
+void	unlock_quotes(char *arg);
 // TOOLS/STRINGS PROTOTYPES
 char		*ft_strdup(char *value);
 int			ft_strncmp(const char *s1, const char *s2, size_t n);
