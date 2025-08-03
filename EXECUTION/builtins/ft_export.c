@@ -7,7 +7,7 @@ static int	is_valid_identifier(const char *s)
 	if (!s || (!ft_isalpha(s[0]) && s[0] != '_'))
 		return (0);
 	i = 1;
-	while (s[i] && s[i] != '=')
+	while (s[i] && s[i] != '=' && s[i] != '+')
 	{
 		if (!ft_isalnum(s[i]) && s[i] != '_')
 			return (0);
@@ -100,55 +100,72 @@ static int	print_exported_vars(char **envp)
 	return (0);
 }
 
-static int	add_new_env_var(char *arg, char ***envp_ptr, int count)
+static int	handle_export_arg(char *arg, t_shell *shell)
 {
-	char	**new_envp;
-	int		i;
+	char	*name;
+	char	*value;
+	char	*equal_sign;
+	char	*existing_value;
+	char	*new_value;
 
-	new_envp = malloc(sizeof(char *) * (count + 2));
-	if (!new_envp)
-		return (1);
-	i = -1;
-	while (++i < count)
-		new_envp[i] = (*envp_ptr)[i];
-	new_envp[i] = ft_strdup(arg);
-	if (!new_envp[i])
+	equal_sign = ft_strchr(arg, '=');
+	if (equal_sign && equal_sign > arg && *(equal_sign - 1) == '+')
 	{
-		free(new_envp);
-		return (1);
-	}
-	new_envp[i + 1] = NULL;
-	free(*envp_ptr);
-	*envp_ptr = new_envp;
-	return (0);
-}
-
-static int	add_or_update_env(char *arg, char ***envp_ptr)
-{
-	int		i;
-	size_t	len;
-
-	len = 0;
-	while (arg[len] && arg[len] != '=')
-		len++;
-	i = 0;
-	while ((*envp_ptr)[i])
-	{
-		if (ft_strncmp((*envp_ptr)[i], arg, len) == 0
-			&& ((*envp_ptr)[i][len] == '=' || (*envp_ptr)[i][len] == '\0'))
+		name = ft_substr(arg, 0, equal_sign - arg - 1);
+		if (!name)
+			return (1);
+		value = equal_sign + 1;
+		existing_value = my_getenv(name, shell->envp);
+		if (existing_value)
 		{
-			if (arg[len] == '=')
-			{
-				free((*envp_ptr)[i]);
-				(*envp_ptr)[i] = ft_strdup(arg);
-				if (!(*envp_ptr)[i])
-					return (1);
-			}
-			return (0);
+			new_value = ft_strjoin(existing_value, value);
+			if (!new_value)
+				return (free(name), 1);
+			set_env(name, new_value, shell);
+			free(new_value);
 		}
-		i++;
+		else
+			set_env(name, value, shell);
+		return (free(name), 0);
 	}
-	return (add_new_env_var(arg, envp_ptr, i));
+	else if (equal_sign)
+	{
+		name = ft_substr(arg, 0, equal_sign - arg);
+		if (!name)
+			return (1);
+		value = equal_sign + 1;
+		set_env(name, value, shell);
+		return (free(name), 0);
+	}
+	else
+	{
+		int i = 0;
+		size_t arg_len = ft_strlen(arg);
+		while (shell->envp[i])
+		{
+			if (ft_strncmp(shell->envp[i], arg, arg_len) == 0 &&
+				(shell->envp[i][arg_len] == '=' || shell->envp[i][arg_len] == '\0'))
+				return (0);
+			i++;
+		}
+		int count = i;
+		char **new_envp = malloc(sizeof(char *) * (count + 2));
+		if (!new_envp)
+			return (1);
+		i = 0;
+		while (i < count)
+		{
+			new_envp[i] = shell->envp[i];
+			i++;
+		}
+		new_envp[i] = ft_strdup(arg);
+		if (!new_envp[i])
+			return (free(new_envp), 1);
+		new_envp[i + 1] = NULL;
+		free(shell->envp);
+		shell->envp = new_envp;
+	}
+	return (0);
 }
 
 int	ft_export(char **args, t_shell *shell)
@@ -171,7 +188,7 @@ int	ft_export(char **args, t_shell *shell)
 		}
 		else
 		{
-			if (add_or_update_env(args[i], &shell->envp) != 0)
+			if (handle_export_arg(args[i], shell) != 0)
 			{
 				ft_putstr_fd("minishell: export: allocation error\n", 2);
 				status = 1;
