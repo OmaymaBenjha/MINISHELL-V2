@@ -12,21 +12,6 @@
 
 #include "parsing.h"
 
-static void	heredoc_sigint_handler(int sig)
-{
-	(void)sig;
-	exit(130);
-}
-static char	*maybe_expand_line(char *line, bool flag, t_shell *shell)
-{
-	int exp;
-
-	exp = 0;
-	if (flag)
-		return (expander(line, shell, &exp));
-	else
-		return (gc_strdup(line));
-}
 static void	child_heredoc_routine(int *pipe_fd, t_redir *redir, t_shell *shell)
 {
 	char	*line;
@@ -36,7 +21,7 @@ static void	child_heredoc_routine(int *pipe_fd, t_redir *redir, t_shell *shell)
 	signal(SIGINT, heredoc_sigint_handler);
 	signal(SIGQUIT, SIG_IGN);
 	close(pipe_fd[0]);
-	delimiter = strip_quotes(redir->del_or_fname);
+	delimiter = final_delim(redir->del_or_fname);
 	while (1)
 	{
 		line = readline("heredoc> ");
@@ -49,11 +34,10 @@ static void	child_heredoc_routine(int *pipe_fd, t_redir *redir, t_shell *shell)
 		processed_line = maybe_expand_line(line,
 				redir->expand_in_heredoc, shell);
 		write(pipe_fd[1], processed_line, ft_strlen(processed_line));
-		write(pipe_fd[1], "\n", 1);
-		free(line);
+		(write(pipe_fd[1], "\n", 1), free(line));
+		
 	}
-	close(pipe_fd[1]);
-	exit(0);
+	(close(pipe_fd[1]), exit(0));
 }
 
 static int	parent_wait_heredoc(pid_t pid, int *pipe_fd,

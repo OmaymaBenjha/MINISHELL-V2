@@ -123,6 +123,9 @@ int			handle_redirection(t_command *cmd, t_token **current_token);
 
 // HEREDOC PROTOTYPES
 int			process_heredoc_pipe(t_command *cmds_head, t_shell *shell);
+char    	*final_delim(char *delim);
+void		heredoc_sigint_handler(int sig);
+char		*maybe_expand_line(char *line, bool flag, t_shell *shell);
 
 // EXPAND PROTOTYPES
 char		*expander(char *str, t_shell *shell, int *exp);

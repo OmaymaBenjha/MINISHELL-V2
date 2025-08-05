@@ -14,17 +14,14 @@
 
 static bool	is_quoted(const char *str)
 {
-	size_t	len;
-
 	if (!str)
 		return (false);
-	len = ft_strlen(str);
-	if (len < 2)
-		return (false);
-	if (str[0] == '\'' && str[len - 1] == '\'')
-		return (true);
-	if (str[0] == '\"' && str[len - 1] == '\"')
-		return (true);
+	while (*str)
+	{
+		if (*str == '\'' || *str == '\"')
+			return (true);
+		str++;
+	}
 	return (false);
 }
 

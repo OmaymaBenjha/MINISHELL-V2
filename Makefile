@@ -1,7 +1,7 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror  -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror 
 RM = rm -f
 
 READLINE_PATH = /mnt/homes/oben-jha/homebrew/opt/readline
@@ -44,6 +44,7 @@ SRCS = main.c \
        GARBAGE_COLLECTOR/gc_mall.c \
        GARBAGE_COLLECTOR/gc_mall2.c \
        HEREDOC/processor.c \
+       HEREDOC/helpers.c \
        PARSER/error_handler.c \
        PARSER/processor.c \
        PARSER/redirections.c \
