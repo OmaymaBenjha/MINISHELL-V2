@@ -1,7 +1,7 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror  
+CFLAGS = -Wall -Wextra -Werror  -fsanitize=address
 RM = rm -f
 
 READLINE_PATH = /mnt/homes/oben-jha/homebrew/opt/readline
@@ -34,6 +34,7 @@ SRCS = main.c \
        EXECUTION/builtins/ft_export.c \
        EXECUTION/builtins/ft_pwd.c \
        EXECUTION/builtins/ft_unset.c \
+       EXECUTION/builtins/helpers.c \
        EXPAND/expand.c \
        EXPAND/g_expand.c \
        EXPAND/helper.c \
@@ -60,7 +61,7 @@ OBJS = $(SRCS:.c=.o)
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(OBJS) $(LDFLAGS) -o $(NAME)
+	$(CC) $(OBJS) $(LDFLAGS)  $(CFLAGS) -o $(NAME)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@

@@ -1,21 +1,5 @@
 #include "builtins.h"
 
-static int	is_valid_identifier(const char *s)
-{
-	int	i;
-
-	if (!s || (!ft_isalpha(s[0]) && s[0] != '_'))
-		return (0);
-	i = 1;
-	while (s[i] && s[i] != '=' && s[i] != '+')
-	{
-		if (!ft_isalnum(s[i]) && s[i] != '_')
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
 static void	bubble_sort_env(char **env, int count)
 {
 	int		i;
@@ -102,69 +86,23 @@ static int	print_exported_vars(char **envp)
 
 static int	handle_export_arg(char *arg, t_shell *shell)
 {
-	char	*name;
-	char	*value;
 	char	*equal_sign;
-	char	*existing_value;
-	char	*new_value;
+	size_t	arg_len;
 
+	
 	equal_sign = ft_strchr(arg, '=');
-	if (equal_sign && equal_sign > arg && *(equal_sign - 1) == '+')
+	if (equal_sign)
 	{
-		name = ft_substr(arg, 0, equal_sign - arg - 1);
-		if (!name)
+		if (!add_or_app_var(arg, equal_sign, shell))
 			return (1);
-		value = equal_sign + 1;
-		existing_value = my_getenv(name, shell->envp);
-		if (existing_value)
-		{
-			new_value = ft_strjoin(existing_value, value);
-			if (!new_value)
-				return (free(name), 1);
-			set_env(name, new_value, shell);
-			free(new_value);
-		}
-		else
-			set_env(name, value, shell);
-		return (free(name), 0);
-	}
-	else if (equal_sign)
-	{
-		name = ft_substr(arg, 0, equal_sign - arg);
-		if (!name)
-			return (1);
-		value = equal_sign + 1;
-		set_env(name, value, shell);
-		return (free(name), 0);
 	}
 	else
 	{
-		int i = 0;
-		size_t arg_len = ft_strlen(arg);
-		while (shell->envp[i])
-		{
-			if (ft_strncmp(shell->envp[i], arg, arg_len) == 0 &&
-				(shell->envp[i][arg_len] == '=' || shell->envp[i][arg_len] == '\0'))
-				return (0);
-			i++;
-		}
-		int count = i;
-		char **new_envp = malloc(sizeof(char *) * (count + 2));
-		if (!new_envp)
+		arg_len = ft_strlen(arg);
+		if (!add_without_value(arg, shell, arg_len))
 			return (1);
-		i = 0;
-		while (i < count)
-		{
-			new_envp[i] = shell->envp[i];
-			i++;
-		}
-		new_envp[i] = ft_strdup(arg);
-		if (!new_envp[i])
-			return (free(new_envp), 1);
-		new_envp[i + 1] = NULL;
-		free(shell->envp);
-		shell->envp = new_envp;
 	}
+		
 	return (0);
 }
 
