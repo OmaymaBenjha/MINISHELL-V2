@@ -33,10 +33,16 @@ static void ex_sp(char *arg, t_shell *shell, t_arg_list **head, bool spl)
 		{
 			if (sp_words[j][0] != '\0')
 			{
-				printf("the arg: %s\n", sp_words[j]);
+				int i = 0;
+				while (sp_words[j][i] != '\0')
+				{
+					if (sp_words[j][i] == '$' && (sp_words[j][i+1] == '\'' || sp_words[j][i+1] == '\"'))
+	    				sp_words[j][i] = '\"';
+					i++;
+				}
+				
 				if(it_has_tab(sp_words[j]))
 				{
-					int i;
 					i = 0;
 					extra_split = ft_split(sp_words[j], '\t');
 					while (extra_split && extra_split[i])
