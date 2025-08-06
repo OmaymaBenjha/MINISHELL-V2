@@ -80,11 +80,6 @@ static void	process_input_line(char *line, t_shell *shell, struct termios *term)
 		sa.sa_flags = 0;
 		sigaction(SIGINT, &sa, NULL);
 	}
-	else 
-	{
-		int old = shell->last_exit_status;
-		shell->last_exit_status = old;
-	}
 	(free(line), gc_freed());
 }
 

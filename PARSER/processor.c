@@ -12,7 +12,7 @@
 
 #include "parsing.h"
 
-static int	count_args_in_segment(t_token *tokens)
+static int	count_args_in_segment(t_token *tokens, int *hc)
 {
 	int	count;
 
@@ -22,14 +22,19 @@ static int	count_args_in_segment(t_token *tokens)
 		if (tokens->type == TOKEN_WORD)
 			count++;
 		else if (tokens->type >= TOKEN_REDIR_IN)
+		{
+			if (tokens->type == TOKEN_REDIR_HEREDOC)
+				(*hc)++;
 			tokens = tokens->next;
+		}
+			
 		if (tokens)
 			tokens = tokens->next;
 	}
 	return (count);
 }
 
-static int	process_cmds(t_command **command_list, t_token **tokens)
+static int	process_cmds(t_command **command_list, t_token **tokens, int *hc)
 {
 	t_command	*current_cmd;
 	int			i;
@@ -37,7 +42,7 @@ static int	process_cmds(t_command **command_list, t_token **tokens)
 	current_cmd = create_command_node();
 	add_command_node_back(command_list, current_cmd);
 	current_cmd->args = gc_mall(sizeof(char *)
-			* (count_args_in_segment(*tokens) + 1));
+			* (count_args_in_segment(*tokens, hc) + 1));
 	i = 0;
 	while (*tokens && (*tokens)->type != TOKEN_PIPE
 		&& (*tokens)->type != TOKEN_EOF)
@@ -60,7 +65,9 @@ static int	process_cmds(t_command **command_list, t_token **tokens)
 t_command	*parser(t_token *tokens)
 {
 	t_command	*command_list;
+	int			here_doc_c;
 
+	here_doc_c = 0;
 	if (!tokens || tokens->type == TOKEN_EOF)
 		return (NULL);
 	command_list = NULL;
@@ -68,7 +75,7 @@ t_command	*parser(t_token *tokens)
 	{
 		if (tokens->type == TOKEN_PIPE)
 			return (syntax_error_handler(tokens->value), NULL);
-		if (!process_cmds(&command_list, &tokens))
+		if (!process_cmds(&command_list, &tokens, &here_doc_c))
 			return (NULL);
 		if (tokens && tokens->type == TOKEN_PIPE)
 		{
@@ -77,5 +84,7 @@ t_command	*parser(t_token *tokens)
 				return (syntax_error_handler("newline"), NULL);
 		}
 	}
+	if (here_doc_c > 16)
+		(heredoc_error(), exit(2));
 	return (command_list);
 }

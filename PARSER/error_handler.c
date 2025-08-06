@@ -22,3 +22,7 @@ int	syntax_error_handler(char *token_value)
 	ft_putstr_fd("'\n", 2);
 	return (0);
 }
+void heredoc_error()
+{
+	ft_putstr_fd("minishell: maximum here-document count exceeded\n", 2);
+}

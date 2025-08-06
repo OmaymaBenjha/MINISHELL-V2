@@ -6,7 +6,7 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 23:08:26 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/08/03 14:21:00 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/08/06 10:14:39 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,7 @@ void		add_command_node_back(t_command **list, t_command *new_cmd);
 t_redir		*create_redir_node(t_token_type type, char *filename);
 void		add_redir_node_back(t_redir **list, t_redir *new_redir);
 int			handle_redirection(t_command *cmd, t_token **current_token);
+void			heredoc_error();
 
 // HEREDOC PROTOTYPES
 int			process_heredoc_pipe(t_command *cmds_head, t_shell *shell);
