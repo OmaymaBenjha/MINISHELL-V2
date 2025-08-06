@@ -11,7 +11,7 @@ char    *final_delim(char *delim)
 			break ;
 		i++;
 	}
-	if (delim[i+1] == '\'' || delim[i+1] == '\"')
+	if (delim[i] == '$' && (delim[i+1] == '\'' || delim[i+1] == '\"'))
 	    delim[i] = '\"';
 	return (strip_quotes(delim));
 }
