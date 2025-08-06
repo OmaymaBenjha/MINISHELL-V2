@@ -6,7 +6,7 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 10:59:44 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/08/03 14:42:27 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/08/06 20:29:09 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,18 @@ bool is_fully_quoted(const char *arg)
         return (true);
     return (false);
 }
+bool	has_quotes(const char *str)
+{
+	if (!str)
+		return (false);
+	while (*str)
+	{
+		if (*str == '\'' || *str == '\"')
+			return (true);
+		str++;
+	}
+	return (false);
+}
 
 bool is_valid_ass(const char *arg, int *is_q)
 {
@@ -66,4 +78,17 @@ bool is_valid_ass(const char *arg, int *is_q)
         i++;
     }
     return (true);
+}
+int it_has_tab(char *s)
+{
+    int i;
+    
+    i = 0;
+    while(s[i])
+    {
+        if (s[i] == '\t')
+            return (1);
+        i++;
+    }
+    return (0);
 }

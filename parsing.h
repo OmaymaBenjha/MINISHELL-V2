@@ -6,7 +6,7 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 23:08:26 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/08/06 10:14:39 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/08/06 20:29:31 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,6 +142,9 @@ char		*lock_quotes(const char *value);
 void		unlock_quotes(char *arg);
 bool		is_fully_quoted(const char *arg);
 bool		is_valid_ass(const char *arg, int *is_quo);
+int			it_has_tab(char *s);
+bool		has_quotes(const char *str);
+
 
 // TOOLS/STRINGS PROTOTYPES
 char		*ft_strdup(char *value);

@@ -76,8 +76,7 @@ char	*find_path(char *cmd, char **envp)
 	char	**paths;
 	char	*path_env;
 
-	if(access(cmd, X_OK) == 0)
-		return cmd;
+	
 	if (!cmd || *cmd == '\0')
 	{
 		ft_putstr_fd("minishell: : command not found\n", 2);
@@ -85,6 +84,8 @@ char	*find_path(char *cmd, char **envp)
 	}
 	if (ft_strchr(cmd, '/'))
 		return (check_absolute_path(cmd));
+	if(access(cmd, X_OK) == 0)
+		return cmd;
 	path_env = get_path_from_env(envp);
 	if (!path_env)
 	{

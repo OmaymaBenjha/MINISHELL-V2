@@ -40,3 +40,36 @@ could not accessminishell>
 
 
  << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9 << 10 << 11 << 12 << 13 << 14 << 15  | << 16 << 17
+
+
+
+
+ ============================================
+
+ minishell> export a="    "
+minishell> $a
+minishell> $a""
+minishell: : command not found
+minishell> ""$a
+minishell: : command not found
+minishell> 
+
+===================================================================
+
+ ./minishell 
+minishell> |
+minishell: syntax error near unexpected token `|'
+minishell> 
+exit
+╭─oben-jha@e3r8p11 ~/Desktop/projet minishell/minishell-v3 ‹main●› 
+╰─$ echo $?
+0
+
+======================================================================================
+
+-x b
+declare -x b="ls -al"
+declare -x v="ls -al"
+declare -x x
+declare -x x="hh"
+minishell> 
