@@ -12,7 +12,7 @@
 
 #include "parsing.h"
 
-static char	*extract_quoted_part(char *line, int *i)
+static char	*extract_quoted_part(char *line, int *i, int *status)
 {
 	char	quote_char;
 	int		start;
@@ -25,6 +25,7 @@ static char	*extract_quoted_part(char *line, int *i)
 	if (line[*i] == '\0')
 	{
 		ft_putstr_fd("minishell: syntax error: unclosed quote\n", 2);
+		(*status) = 258;
 		return (NULL);
 	}
 	(*i)++;
@@ -42,7 +43,7 @@ static char	*extract_unquoted_part(char *line, int *i)
 	return (gc_substr(line, start, *i - start));
 }
 
-t_token	*get_word_token(char *line, int *i)
+t_token	*get_word_token(char *line, int *i, int *status)
 {
 	char	*word_so_far;
 	char	*next_part;
@@ -54,7 +55,7 @@ t_token	*get_word_token(char *line, int *i)
 	while (line[*i] && !ft_isspace(line[*i]) && !is_metachar(line[*i]))
 	{
 		if (line[*i] == '\'' || line[*i] == '"')
-			next_part = extract_quoted_part(line, i);
+			next_part = extract_quoted_part(line, i, status);
 		else
 			next_part = extract_unquoted_part(line, i);
 		if (!next_part)
