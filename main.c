@@ -45,6 +45,10 @@ static void	initialize_shell(t_shell *shell, char **envp)
 		perror("minishell: startup error");
 		exit(1);
 	}
+	set_env("OLDPWD", "", shell);
+	set_env("PATH","/.brew/bin:/mnt/homes/oben-jha/.docker/bin:/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.", shell);
+	set_env("_", "/usr/bin/env", shell);
+	set_env("SHLVl", "1", shell);
 	g_signal_received = 0;
 	rl_catch_signals = 0;
 	sa.sa_handler = signal_handler;
@@ -62,19 +66,17 @@ static void	process_input_line(char *line, t_shell *shell, struct termios *term)
 
 	if (*line)
 		add_history(line);
-	tokens = tokenizer(line);
-	commands = parser(tokens);
+	tokens = tokenizer(line, &shell->last_exit_status);
+	commands = parser(tokens, &shell->last_exit_status);
 	if (commands)
 	{
 		if (process_heredoc_pipe(commands, shell))
 		{
-			
 			if (main_expand(commands, shell))
 				(quote_remover(commands), executor(commands, shell));
 			else
 				shell->last_exit_status = 1;
 		}
-		tcsetattr(0, TCSANOW, term);
 		sa.sa_handler = signal_handler;
 		sigemptyset(&sa.sa_mask);
 		sa.sa_flags = 0;
@@ -101,6 +103,7 @@ static void	shell_loop(t_shell *shell, struct termios *term)
 			break ;
 		}
 		process_input_line(line, shell, term);
+		tcsetattr(STDIN_FILENO, TCSANOW, term);
 	}
 }
 
@@ -109,10 +112,15 @@ int	main(int argc, char **argv, char **envp)
 	t_shell			shell;
 	struct termios	term;
 
-	(void)argc;
 	(void)argv;
+	if (argc > 1)
+		return (printf("usage : ./minishell\n"), 1);
+	if(!envp)
+		return (1);
+	if (!isatty(1) || !isatty(0))
+		return  (1);
 	initialize_shell(&shell, envp);
-	tcgetattr(0, &term);
+	tcgetattr(STDIN_FILENO, &term);
 	shell_loop(&shell, &term);
 	free_env(shell.envp);
 	gc_freed();
