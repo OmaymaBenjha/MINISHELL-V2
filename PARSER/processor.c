@@ -34,7 +34,7 @@ static int	count_args_in_segment(t_token *tokens, int *hc)
 	return (count);
 }
 
-static int	process_cmds(t_command **command_list, t_token **tokens, int *hc)
+static int	process_cmds(t_command **command_list, t_token **tokens, int *hc, int *status)
 {
 	t_command	*current_cmd;
 	int			i;
@@ -54,7 +54,7 @@ static int	process_cmds(t_command **command_list, t_token **tokens, int *hc)
 		}
 		else if ((*tokens)->type >= TOKEN_REDIR_IN)
 		{
-			if (!handle_redirection(current_cmd, tokens))
+			if (!handle_redirection(current_cmd, tokens, status))
 				return (0);
 		}
 	}
@@ -62,7 +62,7 @@ static int	process_cmds(t_command **command_list, t_token **tokens, int *hc)
 	return (1);
 }
 
-t_command	*parser(t_token *tokens)
+t_command	*parser(t_token *tokens, int *status)
 {
 	t_command	*command_list;
 	int			here_doc_c;
@@ -74,14 +74,14 @@ t_command	*parser(t_token *tokens)
 	while (tokens && tokens->type != TOKEN_EOF)
 	{
 		if (tokens->type == TOKEN_PIPE)
-			return (syntax_error_handler(tokens->value), NULL);
-		if (!process_cmds(&command_list, &tokens, &here_doc_c))
+			return (syntax_error_handler(tokens->value, status), NULL);
+		if (!process_cmds(&command_list, &tokens, &here_doc_c, status))
 			return (NULL);
 		if (tokens && tokens->type == TOKEN_PIPE)
 		{
 			tokens = tokens->next;
 			if (!tokens || tokens->type == TOKEN_EOF)
-				return (syntax_error_handler("newline"), NULL);
+				return (syntax_error_handler("newline", status), NULL);
 		}
 	}
 	if (here_doc_c > 16)

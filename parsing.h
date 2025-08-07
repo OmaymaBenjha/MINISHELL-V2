@@ -6,7 +6,7 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 23:08:26 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/08/06 20:29:31 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/08/07 12:43:32 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,20 +106,20 @@ char		*gc_strjoin(char const *s1, char const *s2);
 char		*gc_itoa(int n);
 
 // TOKENIZER PROTOTYPES
-t_token		*tokenizer(char *line);
+t_token		*tokenizer(char *line, int *status);
 t_token		*create_token(t_token_type type, char *value);
 void		add_token_back(t_token **list, t_token *new_token);
 t_token		*get_operator_token(char *line, int *i);
-t_token		*get_word_token(char *line, int *i);
+t_token		*get_word_token(char *line, int *i, int *status);
 
 // PARSER PROTOTYPES
-t_command	*parser(t_token *tokens);
-int			syntax_error_handler(char *token_value);
+t_command	*parser(t_token *tokens, int *status);
+int			syntax_error_handler(char *token_value, int *status);
 t_command	*create_command_node(void);
 void		add_command_node_back(t_command **list, t_command *new_cmd);
 t_redir		*create_redir_node(t_token_type type, char *filename);
 void		add_redir_node_back(t_redir **list, t_redir *new_redir);
-int			handle_redirection(t_command *cmd, t_token **current_token);
+int			handle_redirection(t_command *cmd, t_token **current_token, int *s);
 void			heredoc_error();
 
 // HEREDOC PROTOTYPES

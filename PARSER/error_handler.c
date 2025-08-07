@@ -12,7 +12,7 @@
 
 #include "parsing.h"
 
-int	syntax_error_handler(char *token_value)
+int	syntax_error_handler(char *token_value, int *status)
 {
 	ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 	if (token_value)
@@ -20,6 +20,7 @@ int	syntax_error_handler(char *token_value)
 	else
 		ft_putstr_fd("newline", 2);
 	ft_putstr_fd("'\n", 2);
+	(*status) = 258;
 	return (0);
 }
 void heredoc_error()

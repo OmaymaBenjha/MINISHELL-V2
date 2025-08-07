@@ -12,7 +12,7 @@
 
 #include "parsing.h"
 
-int	handle_redirection(t_command *cmd, t_token **current_token_ptr)
+int	handle_redirection(t_command *cmd, t_token **current_token_ptr, int *st)
 {
 	t_token	*redir_token;
 	t_redir	*new_redir;
@@ -20,7 +20,7 @@ int	handle_redirection(t_command *cmd, t_token **current_token_ptr)
 	redir_token = *current_token_ptr;
 	if (redir_token->next->type != TOKEN_WORD)
 	{
-		return (syntax_error_handler(redir_token->next->value));
+		return (syntax_error_handler(redir_token->next->value, st));
 	}
 	new_redir = create_redir_node(redir_token->type, redir_token->next->value);
 	add_redir_node_back(&cmd->redirections, new_redir);
