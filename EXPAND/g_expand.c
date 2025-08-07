@@ -25,13 +25,14 @@ static void ex_sp(char *arg, t_shell *shell, t_arg_list **head, bool spl)
 	exp_str = expander(arg, shell, &has_expanded);
 	if (exp_str[0] == '\0')
 		return ;
-	if ((has_expanded && !is_fully_quoted(arg) && !spl) ||(!is_fully_quoted(arg) && has_quotes(arg)  && !spl))
+	if ((has_expanded && !is_fully_quoted(arg) && !spl))
 	{
 		sp_words = ft_split(exp_str, ' ');
 		j = 0;
-		while (sp_words && sp_words[j] && !is_void(sp_words[j]))
+		while (sp_words && sp_words[j] && !is_void(sp_words[j]) )
 		{
-			if (sp_words[j][0] != '\0')
+			if (sp_words[j][0] != '\0'  && ft_strcmp(sp_words[j], "$\"\"") != 0 && ft_strcmp(sp_words[j], "$\'\'") != 0
+				&& ft_strcmp(sp_words[j], "\"\"") != 0 && ft_strcmp(sp_words[j], "\'\'") != 0)
 			{
 				int i = 0;
 				while (sp_words[j][i] != '\0')
@@ -40,12 +41,12 @@ static void ex_sp(char *arg, t_shell *shell, t_arg_list **head, bool spl)
 	    				sp_words[j][i] = '\"';
 					i++;
 				}
-				
 				if(it_has_tab(sp_words[j]))
 				{
 					i = 0;
 					extra_split = ft_split(sp_words[j], '\t');
-					while (extra_split && extra_split[i])
+					while (extra_split && extra_split[i] && (extra_split[i][0] != '$' && extra_split[i][1] != '\"' && extra_split[i][1] != '\'')
+					    && (extra_split[i][1] != '\'' && (extra_split[i][1] != '\"')))
 					{
 						add_arg_to_list(head, extra_split[i]);
 						i++;
@@ -58,11 +59,7 @@ static void ex_sp(char *arg, t_shell *shell, t_arg_list **head, bool spl)
 		}
 	}
 	else
-	{
-		// if()
 		add_arg_to_list(head, exp_str);
-	}
-		
 }
 
 static void rebuild_args_with_splitting(t_command *cmd, t_shell *shell)

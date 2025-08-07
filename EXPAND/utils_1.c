@@ -6,7 +6,7 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 10:59:44 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/08/06 20:29:09 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/08/07 11:46:33 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,7 @@ int is_void(char *s)
         if (!ft_isspace(*s))
             return (0);
         s++;
-    }
-       
+    }  
     return (1);
 }
 bool is_fully_quoted(const char *arg)
