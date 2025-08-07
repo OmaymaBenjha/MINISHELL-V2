@@ -44,44 +44,25 @@ static int	handle_output_redir(t_redir *redir)
 	close(fd);
 	return (0);
 }
-int handle_input_redirections(t_command *cmd)
-{
-    t_redir *redir = cmd->redirections;
-    while (redir)
-    {
-        if (redir->type == REDIR_INPUT || redir->type == REDIR_HEREDOC)
-        {
-            if (handle_input_redir(redir) == -1)
-                return (-1);
-        }
-        redir = redir->next;
-    }
-    return (0);
-}
-
-int handle_output_redirections(t_command *cmd)
-{
-    t_redir *redir = cmd->redirections;
-    while (redir)
-    {
-        if (redir->type == REDIR_OUTPUT_TRUNC || redir->type == REDIR_OUTPUT_APPEND)
-        {
-            if (handle_output_redir(redir) == -1)
-                return (-1);
-        }
-        redir = redir->next;
-    }
-    return (0);
-}
 
 int	handle_redirections(t_command *cmd)
 {
-	if (handle_input_redirections(cmd) == -1)
-        return (-1);
+	t_redir	*redir;
 
-    if (handle_output_redirections(cmd) == -1)
+	redir = cmd->redirections;
+	while (redir)
 	{
-        return (-1);
+		if (redir->type == REDIR_INPUT || redir->type == REDIR_HEREDOC)
+		{
+			if (handle_input_redir(redir) == -1)
+				return (-1);
+		}
+		else if (redir->type == REDIR_OUTPUT_TRUNC || redir->type == REDIR_OUTPUT_APPEND)
+		{
+			if (handle_output_redir(redir) == -1)
+				return (-1);
+		}
+		redir = redir->next;
 	}
 	return (0);
 }
@@ -111,7 +92,7 @@ int	wait_for_children(pid_t last_pid)
 		term_sig = WTERMSIG(status);
 		exit_status = 128 + term_sig;
 		if (term_sig == SIGQUIT)
-			ft_putstr_fd("Quit (core dumped)\n", 2);
+			ft_putstr_fd("Quit\n", 2);
 		else if (term_sig == SIGINT)
 			ft_putstr_fd("\n", 2);
 	}
