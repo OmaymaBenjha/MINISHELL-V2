@@ -73,3 +73,19 @@ declare -x v="ls -al"
 declare -x x
 declare -x x="hh"
 minishell> 
+
+
+ls | cat | > m lss < m
+minishell: m: No such file or directory
+minishell> echo $?
+1
+
+
+
+
+
+minishell> echo q w e r t y > 1 > 2 > 3 < n
+minishell: n: No such file or directory
+minishell> cat 3
+cat: 3: No such file or directory
+minishell> 
