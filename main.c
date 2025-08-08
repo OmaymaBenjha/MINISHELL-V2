@@ -58,7 +58,7 @@ static void	initialize_shell(t_shell *shell, char **envp)
 	signal(SIGQUIT, SIG_IGN);
 }
 
-static void	process_input_line(char *line, t_shell *shell, struct termios *term)
+static void	process_input_line(char *line, t_shell *shell)
 {
 	t_token				*tokens;
 	t_command			*commands;
@@ -102,7 +102,7 @@ static void	shell_loop(t_shell *shell, struct termios *term)
 			ft_putstr_fd("exit\n", 1);
 			break ;
 		}
-		process_input_line(line, shell, term);
+		process_input_line(line, shell);
 		tcsetattr(STDIN_FILENO, TCSANOW, term);
 	}
 }
