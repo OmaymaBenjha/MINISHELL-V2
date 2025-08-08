@@ -111,14 +111,14 @@ static void	execute_pipeline(t_command *cmd, t_shell *shell)
 		if (pid == -1)
 		{
 			shell->last_exit_status = 1;
-			return ;
+			perror("fork");
+			exit(1);
 		}
 		if (pid == 0)
 			child_process_pipeline(cmd, shell, in_fd, pipe_fd);
 		parent_handle_pipe_fds(&in_fd, pipe_fd, cmd);
 		cmd = cmd->next_piped_command;
 	}
-	shell->last_exit_status = wait_for_children(pid);
 }
 
 void	executor(t_command *commands, t_shell *shell)
@@ -131,7 +131,18 @@ void	executor(t_command *commands, t_shell *shell)
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 	if (commands->next_piped_command)
-		execute_pipeline(commands, shell);
+	{
+		pid = fork();
+		if (pid == -1)
+		{
+			shell->last_exit_status = 1;
+			return;
+		}
+		if (pid == 0)
+			execute_pipeline(commands, shell);
+		shell->last_exit_status = wait_for_children(pid);
+	}
+		
 	else
 	{
 		if (commands->args && commands->args[0] && is_parent_builtin(commands->args[0]))
