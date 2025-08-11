@@ -89,3 +89,44 @@ minishell: n: No such file or directory
 minishell> cat 3
 cat: 3: No such file or directory
 minishell> 
+
+==============
+bash-3.2$ ..
+bash: ..: command not found
+bash-3.2$ $?
+bash: 127: command not found
+bash-3.2$ 
+
+==============
+
+bash-3.2$ Makefile/..
+bash: Makefile/..: Not a directory
+bash-3.2$ $?
+bash: 126: command not found
+bash-3.2$ 
+==============
+
+bash-3.2$ $HOME
+bash: /mnt/homes/oben-jha: is a directory
+bash-3.2$ $?
+bash: 126: command not found
+bash-3.2$ 
+=================
+minishell> touch ls
+minishell> chmod +x ls
+minishell> ls
+minishell: ls: Exec format error
+minishell> ./ls
+minishell: ./ls: Exec format error
+could not accessminishell> 
+
+===================
+bash-3.2$ unset we/f/ew/ /ewf/wef/ /ewf/wef/ 
+bash: unset: `we/f/ew/': not a valid identifier
+bash: unset: `/ewf/wef/': not a valid identifier
+bash: unset: `/ewf/wef/': not a valid identifier
+bash-3.2$ $?
+bash: 1: command not found
+bash-3.2$ 
+==============================
+

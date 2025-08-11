@@ -37,17 +37,15 @@ static char	*check_paths(char *cmd, char **paths)
 	char	*full_path;
 
 	i = 0;
+	
 	while (paths[i])
 	{
 		path_part = gc_strjoin(paths[i], "/");
 		full_path = gc_strjoin(path_part, cmd);
 		if (access(full_path, X_OK) == 0)
-			return (full_path);
+			return (full_path);	
 		i++;
 	}
-	ft_putstr_fd("minishell: ", 2);
-	ft_putstr_fd(cmd, 2);
-	ft_putstr_fd(": command not found\n", 2);
 	return (NULL);
 }
 
@@ -59,41 +57,46 @@ static char	*check_absolute_path(char *cmd)
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(cmd, 2);
 		ft_putstr_fd(": is a directory\n", 2);
-		return (NULL);
+		exit(126);
 	}
-	if (access(cmd, X_OK) == 0)
-	{
-		printf("could not access");
-		return (gc_strdup(cmd));
-	}
-	ft_putstr_fd("minishell: ", 2);
-	perror(cmd);
-	return (NULL);
-}
-
-char	*find_path(char *cmd, char **envp)
-{
-	char	**paths;
-	char	*path_env;
-
-	
-	if (!cmd || *cmd == '\0')
-	{
-		ft_putstr_fd("minishell: : command not found\n", 2);
-		return (NULL);
-	}
-	if (ft_strchr(cmd, '/'))
-		return (check_absolute_path(cmd));
-	if(access(cmd, X_OK) == 0)
-		return cmd;
-	path_env = get_path_from_env(envp);
-	if (!path_env)
+	if (access(cmd, X_OK) < 0)
 	{
 		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(cmd, 2);
-		ft_putstr_fd(": No such file or directory\n", 2);
-		return (NULL);
+    	perror(cmd);
+    	if (errno == ENOTDIR)
+			exit(126);
+		else 	
+			exit(127);
 	}
-	paths = ft_split(path_env, ':');
-	return (check_paths(cmd, paths));
+	return (gc_strdup(cmd));
 }
+
+char *find_path(char *cmd, char **envp)
+{
+    char    **paths;
+    char    *path_env;
+    char    *executable_path;
+
+    if (!cmd || *cmd == '\0') {
+        ft_putstr_fd("minishell: : command not found\n", 2);
+        exit(127);
+    }
+    if (ft_strchr(cmd, '/'))
+        return (check_absolute_path(cmd));
+    path_env = get_path_from_env(envp);
+    if (path_env)
+    {
+        paths = ft_split(path_env, ':');
+        executable_path = check_paths(cmd, paths);
+        if (executable_path)
+            return (executable_path);
+    }
+    if (access(cmd, X_OK) == 0)
+        return (gc_strdup(cmd));
+    ft_putstr_fd("minishell: ", 2);
+    ft_putstr_fd(cmd, 2);
+    ft_putstr_fd(": command not found\n", 2);
+	exit(127);
+	
+}
+

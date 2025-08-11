@@ -48,7 +48,6 @@ static void	initialize_shell(t_shell *shell, char **envp)
 	set_env("OLDPWD", "", shell);
 	set_env("PATH","/.brew/bin:/mnt/homes/oben-jha/.docker/bin:/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.", shell);
 	set_env("_", "/usr/bin/env", shell);
-	set_env("SHLVl", "1", shell);
 	g_signal_received = 0;
 	rl_catch_signals = 0;
 	sa.sa_handler = signal_handler;

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_export.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/08 13:31:13 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/08/08 13:31:13 by oben-jha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "builtins.h"
 
 static void	bubble_sort_env(char **env, int count)
@@ -56,32 +68,27 @@ static int	print_exported_vars(char **envp)
 	char	*equal_sign;
 	int		name_len;
 	char	**sorted_envp;
-	int		count;
 
-	sorted_envp = duplicate_env_for_sorting(envp, &count);
+	sorted_envp = duplicate_env_for_sorting(envp, &i);
 	if (!sorted_envp)
 		return (1);
-	bubble_sort_env(sorted_envp, count);
-	i = 0;
-	while (sorted_envp && sorted_envp[i])
+	bubble_sort_env(sorted_envp, i);
+	i = -1;
+	while (sorted_envp && sorted_envp[++i])
 	{
 		ft_putstr_fd("declare -x ", 1);
 		equal_sign = ft_strchr(sorted_envp[i], '=');
 		if (equal_sign)
 		{
 			name_len = equal_sign - sorted_envp[i];
-			write(1, sorted_envp[i], name_len);
-			ft_putstr_fd("=\"", 1);
-			ft_putstr_fd(equal_sign + 1, 1);
-			ft_putstr_fd("\"", 1);
+			(write(1, sorted_envp[i], name_len), ft_putstr_fd("=\"", 1));
+			(ft_putstr_fd(equal_sign + 1, 1),ft_putstr_fd("\"", 1));
 		}
 		else
 			ft_putstr_fd(sorted_envp[i], 1);
 		ft_putstr_fd("\n", 1);
-		i++;
 	}
-	free(sorted_envp);
-	return (0);
+	return (free(sorted_envp), 0);
 }
 
 static int	handle_export_arg(char *arg, t_shell *shell)

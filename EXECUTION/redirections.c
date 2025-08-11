@@ -75,28 +75,30 @@ void	restore_fds(int original_stdin, int original_stdout)
 	close(original_stdout);
 }
 
-int	wait_for_children(pid_t last_pid)
+int wait_for_children(pid_t last_pid)
 {
-	int	status;
-	int	exit_status;
-	int	term_sig;
+    int status;
+    int exit_status;
+    int term_sig;
 
-	if (last_pid == -1)
-		return (1);
-	exit_status = 1;
-	waitpid(last_pid, &status, 0);
-	if (WIFEXITED(status))
-		exit_status = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status))
-	{
-		term_sig = WTERMSIG(status);
-		exit_status = 128 + term_sig;
-		if (term_sig == SIGQUIT)
-			ft_putstr_fd("Quit\n", 2);
-		else if (term_sig == SIGINT)
-			ft_putstr_fd("\n", 2);
-	}
-	while (wait(NULL) != -1)
-		;
-	return (exit_status);
+    if (last_pid > 0)
+    {
+        waitpid(last_pid, &status, 0);
+        if (WIFEXITED(status))
+            exit_status = WEXITSTATUS(status);
+        else if (WIFSIGNALED(status))
+        {
+            term_sig = WTERMSIG(status);
+            exit_status = 128 + term_sig;
+            if (term_sig == SIGQUIT)
+                ft_putstr_fd("Quit\n", 2);
+        }
+    }
+    else
+        exit_status = 1; 
+    while (wait(NULL) != -1 || errno != ECHILD)
+    {
+      
+    }
+    return (exit_status);
 }
