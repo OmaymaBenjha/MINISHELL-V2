@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aziane <aziane@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 23:08:26 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/08/11 13:35:51 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/08/11 22:33:57 by aziane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@
 
 # define SQUOTE_LOCK '\x03'
 # define DQUOTE_LOCK '\x04'
+
+
 
 typedef struct s_shell
 {
@@ -157,5 +159,7 @@ int			ft_isspace(char c);
 int			is_metachar(char c);
 char		**ft_split(char const *s, char c);
 char		*ft_strchr(const char *s, int c);
+void		initialize_shell(t_shell *shell, char **envp);
+void		process_input_line(char *line, t_shell *shell);
 
 #endif

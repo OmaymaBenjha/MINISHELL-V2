@@ -92,21 +92,20 @@ char	*find_path(char *cmd, char **envp)
 		(ft_putstr_fd("minishell: : command not found\n", 2), exit(127));
 	if (ft_strchr(cmd, '/'))
 		return (check_absolute_path(cmd));
-    path_env = get_path_from_env(envp);
-    if (path_env)
-    {
-        paths = ft_split(path_env, ':');
-        executable_path = check_paths(cmd, paths);
-        if (executable_path)
-            return (executable_path);
-    }
-    if (access(cmd, X_OK) == 0)
-        return (gc_strdup(cmd));
+	path_env = get_path_from_env(envp);
 	if (path_env)
 	{
-		(ft_putstr_fd("minishell: ", 2),ft_putstr_fd(cmd, 2));
-    	(ft_putstr_fd(": command not found\n", 2), exit(127));
+		paths = ft_split(path_env, ':');
+		executable_path = check_paths(cmd, paths);
+		if (executable_path)
+			return (executable_path);
 	}
-    (ft_putstr_fd("minishell: ", 2), perror(cmd), exit(127));
+	if (access(cmd, X_OK) == 0)
+		return (gc_strdup(cmd));
+	if (path_env)
+	{
+		(ft_putstr_fd("minishell: ", 2), ft_putstr_fd(cmd, 2));
+		(ft_putstr_fd(": command not found\n", 2), exit(127));
+	}
+	(ft_putstr_fd("minishell: ", 2), perror(cmd), exit(127));
 }
-

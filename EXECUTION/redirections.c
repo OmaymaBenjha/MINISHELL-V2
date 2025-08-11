@@ -69,7 +69,8 @@ int	handle_redirections(t_command *cmd)
 			if (handle_input_redir(redir) == -1)
 				return (-1);
 		}
-		else if (redir->type == REDIR_OUTPUT_TRUNC || redir->type == REDIR_OUTPUT_APPEND)
+		else if (redir->type == REDIR_OUTPUT_TRUNC
+			|| redir->type == REDIR_OUTPUT_APPEND)
 		{
 			if (handle_output_redir(redir) == -1)
 				return (-1);
@@ -87,30 +88,29 @@ void	restore_fds(int original_stdin, int original_stdout)
 	close(original_stdout);
 }
 
-int wait_for_children(pid_t last_pid)
+int	wait_for_children(pid_t last_pid)
 {
-    int status;
-    int exit_status;
-    int term_sig;
+	int	status;
+	int	exit_status;
+	int	term_sig;
 
-    if (last_pid > 0)
-    {
-        waitpid(last_pid, &status, 0);
-        if (WIFEXITED(status))
-            exit_status = WEXITSTATUS(status);
-        else if (WIFSIGNALED(status))
-        {
-            term_sig = WTERMSIG(status);
-            exit_status = 128 + term_sig;
-            if (term_sig == SIGQUIT)
-                ft_putstr_fd("Quit\n", 2);
-        }
-    }
-    else
-        exit_status = 1; 
-    while (wait(NULL) != -1 || errno != ECHILD)
-    {
-      
-    }
-    return (exit_status);
+	if (last_pid > 0)
+	{
+		waitpid(last_pid, &status, 0);
+		if (WIFEXITED(status))
+			exit_status = WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
+		{
+			term_sig = WTERMSIG(status);
+			exit_status = 128 + term_sig;
+			if (term_sig == SIGQUIT)
+				ft_putstr_fd("Quit\n", 2);
+		}
+	}
+	else
+		exit_status = 1;
+	while (wait(NULL) != -1 || errno != ECHILD)
+	{
+	}
+	return (exit_status);
 }

@@ -33,5 +33,7 @@ void	handle_exit(char *id);
 pid_t	execute_pipeline_command(t_command *cmd, t_shell *shell,
 			int in_fd, int *pipe_fd);
 void	parent_handle_pipe_fds(int *in_fd, int *pipe_fd, t_command *cmd);
+int		add_new_env_var(char *new_var, t_shell *shell, int size);
+char	*create_env_string(const char *name, const char *value);
 
 #endif

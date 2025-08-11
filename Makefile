@@ -21,8 +21,10 @@ INCLUDES = -I. \
 LDFLAGS = -L$(READLINE_PATH)/lib -lreadline
 
 SRCS = main.c \
+	   trigger.c \
        EXECUTION/builtins_dispatch.c \
        EXECUTION/env_utils.c \
+	    EXECUTION/env_utils_helper.c \
        EXECUTION/executor.c \
        EXECUTION/path_finder.c \
        EXECUTION/redirections.c \
@@ -65,8 +67,7 @@ SRCS = main.c \
 
 HEADERS = parsing.h \
           EXECUTION/execution.h \
-          EXECUTION/builtins/builtins.h \
-          EXECUTION/status.h
+          EXECUTION/builtins/builtins.h
 
 OBJS = $(SRCS:.c=.o)
 
