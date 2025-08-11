@@ -1,10 +1,10 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address
 RM = rm -f
 
-READLINE_PATH = /mnt/homes/oben-jha/homebrew/opt/readline
+READLINE_PATH = /mnt/homes/aziane/homebrew/opt/readline
 
 INCLUDES = -I. \
            -IEXECUTION \
@@ -26,6 +26,8 @@ SRCS = main.c \
        EXECUTION/executor.c \
        EXECUTION/path_finder.c \
        EXECUTION/redirections.c \
+	   EXECUTION/handler.c \
+	   EXECUTION/executor_helper.c \
        EXECUTION/builtins/ft_cd.c \
        EXECUTION/builtins/ft_echo.c \
        EXECUTION/builtins/ft_env.c \

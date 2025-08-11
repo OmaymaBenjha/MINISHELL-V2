@@ -1,0 +1,17 @@
+EXECUTION
+EXPAND
+GARBAGE_COLLECTOR
+HEREDOC
+Makefile
+PARSER
+TOKENIZER
+ls
+m
+main.c
+main.o
+minishell
+n
+parsing.h
+project_data.json
+script.py
+tools

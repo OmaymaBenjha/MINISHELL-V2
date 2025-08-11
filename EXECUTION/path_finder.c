@@ -1,4 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   path_finder.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aziane <aziane@student.1337.ma>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/11 20:58:56 by aziane            #+#    #+#             */
+/*   Updated: 2025/08/11 20:58:56 by aziane           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "execution.h"
+
 static int	is_directory(const char *path)
 {
 	int		fd;
@@ -37,13 +50,12 @@ static char	*check_paths(char *cmd, char **paths)
 	char	*full_path;
 
 	i = 0;
-	
 	while (paths[i])
 	{
 		path_part = gc_strjoin(paths[i], "/");
 		full_path = gc_strjoin(path_part, cmd);
 		if (access(full_path, X_OK) == 0)
-			return (full_path);	
+			return (full_path);
 		i++;
 	}
 	return (NULL);
@@ -51,7 +63,6 @@ static char	*check_paths(char *cmd, char **paths)
 
 static char	*check_absolute_path(char *cmd)
 {
-
 	if (is_directory(cmd))
 	{
 		ft_putstr_fd("minishell: ", 2);
@@ -62,27 +73,25 @@ static char	*check_absolute_path(char *cmd)
 	if (access(cmd, X_OK) < 0)
 	{
 		ft_putstr_fd("minishell: ", 2);
-    	perror(cmd);
-    	if (errno == ENOTDIR || errno == EACCES)
+		perror(cmd);
+		if (errno == ENOTDIR || errno == EACCES)
 			exit(126);
-		else 	
+		else
 			exit(127);
 	}
 	return (gc_strdup(cmd));
 }
 
-char *find_path(char *cmd, char **envp)
+char	*find_path(char *cmd, char **envp)
 {
-    char    **paths;
-    char    *path_env;
-    char    *executable_path;
+	char	**paths;
+	char	*path_env;
+	char	*executable_path;
 
-    if (!cmd || *cmd == '\0') {
-        ft_putstr_fd("minishell: : command not found\n", 2);
-        exit(127);
-    }
-    if (ft_strchr(cmd, '/'))
-        return (check_absolute_path(cmd));
+	if (!cmd || *cmd == '\0')
+		(ft_putstr_fd("minishell: : command not found\n", 2), exit(127));
+	if (ft_strchr(cmd, '/'))
+		return (check_absolute_path(cmd));
     path_env = get_path_from_env(envp);
     if (path_env)
     {
@@ -95,14 +104,9 @@ char *find_path(char *cmd, char **envp)
         return (gc_strdup(cmd));
 	if (path_env)
 	{
-		ft_putstr_fd("minishell: ", 2);
-    	ft_putstr_fd(cmd, 2);
-    	ft_putstr_fd(": command not found\n", 2);
-		exit(127);
+		(ft_putstr_fd("minishell: ", 2),ft_putstr_fd(cmd, 2));
+    	(ft_putstr_fd(": command not found\n", 2), exit(127));
 	}
-    ft_putstr_fd("minishell: ", 2);
-	perror(cmd);
-	exit(127);
-	
+    (ft_putstr_fd("minishell: ", 2), perror(cmd), exit(127));
 }
 
