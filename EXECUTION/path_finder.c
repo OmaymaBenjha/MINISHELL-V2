@@ -63,7 +63,7 @@ static char	*check_absolute_path(char *cmd)
 	{
 		ft_putstr_fd("minishell: ", 2);
     	perror(cmd);
-    	if (errno == ENOTDIR)
+    	if (errno == ENOTDIR || errno == EACCES)
 			exit(126);
 		else 	
 			exit(127);
@@ -93,9 +93,15 @@ char *find_path(char *cmd, char **envp)
     }
     if (access(cmd, X_OK) == 0)
         return (gc_strdup(cmd));
+	if (path_env)
+	{
+		ft_putstr_fd("minishell: ", 2);
+    	ft_putstr_fd(cmd, 2);
+    	ft_putstr_fd(": command not found\n", 2);
+		exit(127);
+	}
     ft_putstr_fd("minishell: ", 2);
-    ft_putstr_fd(cmd, 2);
-    ft_putstr_fd(": command not found\n", 2);
+	perror(cmd);
 	exit(127);
 	
 }

@@ -43,12 +43,22 @@ static int	remove_env_var(char *var_to_unset, char ***envp_ptr)
 int	ft_unset(char **args, t_shell *shell)
 {
 	int	i;
+	int status;
 
 	i = 1;
+	status = 0;
 	while (args[i])
 	{
-		remove_env_var(args[i], &shell->envp);
+		if (is_valid_identifier(args[i]))
+			remove_env_var(args[i], &shell->envp);
+		else
+		{
+			ft_putstr_fd("minishell: export: `", 2);
+			ft_putstr_fd(args[i], 2);
+			ft_putstr_fd("': not a valid identifier\n", 2);
+			status = 1;
+		}
 		i++;
 	}
-	return (0);
+	return (status);
 }

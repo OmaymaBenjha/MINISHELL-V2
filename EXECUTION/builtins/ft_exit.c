@@ -24,13 +24,15 @@ static	int	is_valid_exit_arg(char *n)
 	i = 0;
 	if (!n)
 		return (0);
+	while (ft_isspace(n[i]))
+		i++;
 	if (n[i] == '+' || n[i] == '-')
 		i++;
 	if (n[i] == '\0')
 		return (0);
 	while (n[i])
 	{
-		if (!is_numeric_char(n[i]))
+		if (!is_numeric_char(n[i]) && !ft_isspace(n[i]))
 			return (0);
 		i++;
 	}

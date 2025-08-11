@@ -121,7 +121,7 @@ minishell: ./ls: Exec format error
 could not accessminishell> 
 
 ===================
-bash-3.2$ unset we/f/ew/ /ewf/wef/ /ewf/wef/ 
+bash-3.2$ unset we/f/ew/ /ewf/wef/ /ewf/wef/  
 bash: unset: `we/f/ew/': not a valid identifier
 bash: unset: `/ewf/wef/': not a valid identifier
 bash: unset: `/ewf/wef/': not a valid identifier

@@ -45,7 +45,7 @@ static void	initialize_shell(t_shell *shell, char **envp)
 		perror("minishell: startup error");
 		exit(1);
 	}
-	set_env("OLDPWD", "", shell);
+	set_env("OLDPWD", (const char *)NULL, shell);
 	set_env("PATH","/.brew/bin:/mnt/homes/oben-jha/.docker/bin:/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.", shell);
 	set_env("_", "/usr/bin/env", shell);
 	g_signal_received = 0;

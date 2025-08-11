@@ -33,23 +33,28 @@ char	**dupenv(char **envp)
 	int		i;
 	int		count;
 	char	**new_envp;
+	int 	a;
 
 	count = count_env_vars(envp);
 	new_envp = (char **)malloc(sizeof(char *) * (count + 1));
 	if (!new_envp)
 		return (NULL);
 	i = 0;
+	a = 0;
 	while (i < count)
 	{
-		new_envp[i] = ft_strdup(envp[i]);
-		if (!new_envp[i])
+		if (ft_strncmp(envp[i], "OLDPWD", 6) == 0)
+			i++;
+		new_envp[a] = ft_strdup(envp[i]);
+		if (!new_envp[a])
 		{
-			while (--i >= 0)
-				free(new_envp[i]);
+			while (--a >= 0)
+				free(new_envp[a]);
 			free(new_envp);
 			return (NULL);
 		}
 		i++;
+		a++;
 	}
 	new_envp[i] = NULL;
 	return (new_envp);
@@ -84,17 +89,21 @@ int	set_env(const char *name, const char *value, t_shell *shell)
 	char	*temp;
 	char	**new_envp;
 
-	name_len = ft_strlen(name);
-	temp = ft_strjoin(name, "=");
-	new_var = ft_strjoin(temp, value);
-	free(temp);
+	if (value != (char const *)NULL)
+	{
+		name_len = ft_strlen(name);
+		temp = ft_strjoin(name, "=");
+		new_var = ft_strjoin(temp, value);	
+		free(temp);
+	}
+	else 
+		new_var = ft_strdup((char *)name);
 	if (!new_var)
 		return (1);
 	i = 0;
 	while (shell->envp[i])
 	{
-		if (ft_strncmp(shell->envp[i], name, name_len) == 0 &&
-			shell->envp[i][name_len] == '=')
+		if (ft_strncmp(shell->envp[i], name, name_len) == 0)
 		{
 			free(shell->envp[i]);
 			shell->envp[i] = new_var;
