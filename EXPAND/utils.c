@@ -6,11 +6,11 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/13 23:15:34 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/07/13 23:15:34 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/08/11 12:10:00 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing.h" 
+#include "parsing.h"
 
 static size_t	count_stripped_len(const char *str)
 {
@@ -71,50 +71,4 @@ char	*strip_quotes(const char *str)
 		return (NULL);
 	strip_loop(str, cleaned);
 	return (cleaned);
-}
-
-char	*lock_quotes(const char *value)
-{
-	char	*locked_str;
-	int		i;
-	bool	in_squote;
-	bool	in_dquote;
-
-	if (!value)
-		return (NULL);
-	locked_str = gc_mall(ft_strlen(value) + 1);
-	if (!locked_str)
-		return (NULL);
-	i = 0;
-	in_squote = false;
-	in_dquote = false;
-	while (value[i])
-	{
-		if (value[i] == '\'' && !in_dquote)
-			(locked_str[i] = SQUOTE_LOCK, in_squote = !in_squote);
-		else if (value[i] == '\"' && !in_squote)
-			(locked_str[i] = DQUOTE_LOCK, in_squote = !in_squote);
-		else
-			locked_str[i] = value[i];
-		i++;
-	}
-	locked_str[i] = '\0';
-	return (locked_str);
-}
-
-void	unlock_quotes(char *arg)
-{
-	int	i;
-
-	if (!arg)
-		return ;
-	i = 0;
-	while (arg[i])
-	{
-		if (arg[i] == SQUOTE_LOCK)
-			arg[i] = '\'';
-		else if (arg[i] == DQUOTE_LOCK)
-			arg[i] = '\"';
-		i++;
-	}
 }

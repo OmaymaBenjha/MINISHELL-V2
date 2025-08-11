@@ -50,7 +50,6 @@ static void	run_child(t_command *cmd, t_shell *shell)
 	}
 	if (errno != ENOEXEC)
 	{
-		// printf("hre\n");
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(cmd->args[0], 2);
 		ft_putstr_fd(": ", 2);

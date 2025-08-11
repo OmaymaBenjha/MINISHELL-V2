@@ -35,7 +35,6 @@ static void	child_heredoc_routine(int *pipe_fd, t_redir *redir, t_shell *shell)
 				redir->expand_in_heredoc, shell);
 		write(pipe_fd[1], processed_line, ft_strlen(processed_line));
 		(write(pipe_fd[1], "\n", 1), free(line));
-		
 	}
 	(close(pipe_fd[1]), exit(0));
 }
@@ -111,6 +110,5 @@ int	process_heredoc_pipe(t_command *cmds_head, t_shell *shell)
 		}
 		cmd = cmd->next_piped_command;
 	}
-	sigaction(SIGINT, &sa_orig, NULL);
-	return (ret);
+	return (sigaction(SIGINT, &sa_orig, NULL), ret);
 }

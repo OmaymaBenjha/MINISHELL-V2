@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/14 16:26:03 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/07/24 17:15:00 by Gemini         ###   ########.fr       */
+/*   Created: 2025/08/11 10:23:15 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/08/11 13:42:14 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,22 @@ static void	signal_handler(int sig)
 	}
 }
 
-static void	initialize_shell(t_shell *shell, char **envp)
+static void	setup_signals(void)
 {
 	struct sigaction	sa;
-	char				cwd_buffer[1024];
+
+	g_signal_received = 0;
+	rl_catch_signals = 0;
+	sa.sa_handler = signal_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGINT, &sa, NULL);
+	signal(SIGQUIT, SIG_IGN);
+}
+
+static void	initialize_shell(t_shell *shell, char **envp)
+{
+	char	cwd_buffer[1024];
 
 	shell->envp = dupenv(envp);
 	shell->last_exit_status = 0;
@@ -46,42 +58,45 @@ static void	initialize_shell(t_shell *shell, char **envp)
 		exit(1);
 	}
 	set_env("OLDPWD", (const char *)NULL, shell);
-	set_env("PATH","/.brew/bin:/mnt/homes/oben-jha/.docker/bin:/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.", shell);
+	set_env("PATH", "/.brew/bin:/mnt/homes/oben-jha/.docker/bin"
+		":/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.", shell);
 	set_env("_", "/usr/bin/env", shell);
-	g_signal_received = 0;
-	rl_catch_signals = 0;
+	setup_signals();
+}
+
+static void	run_parsed_commands(t_command *commands, t_shell *shell)
+{
+	struct sigaction	sa;
+
+	if (process_heredoc_pipe(commands, shell))
+	{
+		if (main_expand(commands, shell))
+		{
+			quote_remover(commands);
+			executor(commands, shell);
+		}
+		else
+			shell->last_exit_status = 1;
+	}
 	sa.sa_handler = signal_handler;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	sigaction(SIGINT, &sa, NULL);
-	signal(SIGQUIT, SIG_IGN);
 }
 
 static void	process_input_line(char *line, t_shell *shell)
 {
-	t_token				*tokens;
-	t_command			*commands;
-	struct sigaction	sa;
+	t_token		*tokens;
+	t_command	*commands;
 
 	if (*line)
 		add_history(line);
 	tokens = tokenizer(line, &shell->last_exit_status);
 	commands = parser(tokens, &shell->last_exit_status);
 	if (commands)
-	{
-		if (process_heredoc_pipe(commands, shell))
-		{
-			if (main_expand(commands, shell))
-				(quote_remover(commands), executor(commands, shell));
-			else
-				shell->last_exit_status = 1;
-		}
-		sa.sa_handler = signal_handler;
-		sigemptyset(&sa.sa_mask);
-		sa.sa_flags = 0;
-		sigaction(SIGINT, &sa, NULL);
-	}
-	(free(line), gc_freed());
+		run_parsed_commands(commands, shell);
+	free(line);
+	gc_freed();
 }
 
 static void	shell_loop(t_shell *shell, struct termios *term)
@@ -113,11 +128,12 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argv;
 	if (argc > 1)
-		return (printf("usage : ./minishell\n"), 1);
-	if(!envp)
+	{
+		printf("usage : ./minishell\n");
 		return (1);
-	if (!isatty(1) || !isatty(0))
-		return  (1);
+	}
+	if (!envp || !isatty(1) || !isatty(0))
+		return (1);
 	initialize_shell(&shell, envp);
 	tcgetattr(STDIN_FILENO, &term);
 	shell_loop(&shell, &term);

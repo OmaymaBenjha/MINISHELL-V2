@@ -6,7 +6,7 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 23:34:49 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/08/07 11:14:00 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/08/11 07:48:13 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ static void	handle_dollar_expansion(char **new_str, const char *str,
 {
 	char	*key;
 	char	*value;
+	char	*locked_value;
 
 	(*i)++;
 	if (str[*i] == '?')
@@ -50,22 +51,16 @@ static void	handle_dollar_expansion(char **new_str, const char *str,
 		return ;
 	}
 	if (str[*i] == '\'' || str[*i] == '\"' || str[*i] == '\0')
-    {
-        append_char(new_str, '$');
-        return;
-    }
+		return (append_char(new_str, '$'));
 	key = extract_variable_name(&str[*i]);
 	if (!key || *key == '\0')
-	{
-		append_char(new_str, '$');
-		return ;
-	}
+		return (append_char(new_str, '$'));
 	value = my_getenv(key, data->shell->envp);
-	if (value )
+	if (value)
 	{
-		char *locked_value = lock_quotes(value);
+		locked_value = lock_quotes(value);
 		*new_str = gc_strjoin(*new_str, locked_value);
-	}	
+	}
 	*i += ft_strlen(key);
 	if (value)
 		*(data->flag) = 1;

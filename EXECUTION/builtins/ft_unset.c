@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_unset.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/11 13:17:11 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/08/11 13:17:11 by oben-jha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "builtins.h"
 
 static int	count_vars(char **envp)
@@ -35,15 +47,14 @@ static int	remove_env_var(char *var_to_unset, char ***envp_ptr)
 		i++;
 	}
 	new_envp[j] = NULL;
-	free(*envp_ptr);
 	*envp_ptr = new_envp;
-	return (0);
+	return (free(*envp_ptr), 0);
 }
 
 int	ft_unset(char **args, t_shell *shell)
 {
 	int	i;
-	int status;
+	int	status;
 
 	i = 1;
 	status = 0;

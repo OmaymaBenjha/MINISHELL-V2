@@ -82,7 +82,7 @@ static int	print_exported_vars(char **envp)
 		{
 			name_len = equal_sign - sorted_envp[i];
 			(write(1, sorted_envp[i], name_len), ft_putstr_fd("=\"", 1));
-			(ft_putstr_fd(equal_sign + 1, 1),ft_putstr_fd("\"", 1));
+			(ft_putstr_fd(equal_sign + 1, 1), ft_putstr_fd("\"", 1));
 		}
 		else
 			ft_putstr_fd(sorted_envp[i], 1);
@@ -96,7 +96,6 @@ static int	handle_export_arg(char *arg, t_shell *shell)
 	char	*equal_sign;
 	size_t	arg_len;
 
-	
 	equal_sign = ft_strchr(arg, '=');
 	if (equal_sign)
 	{
@@ -109,7 +108,6 @@ static int	handle_export_arg(char *arg, t_shell *shell)
 		if (!add_without_value(arg, shell, arg_len))
 			return (1);
 	}
-		
 	return (0);
 }
 
@@ -126,18 +124,14 @@ int	ft_export(char **args, t_shell *shell)
 	{
 		if (!is_valid_identifier(args[i]))
 		{
-			ft_putstr_fd("minishell: export: `", 2);
-			ft_putstr_fd(args[i], 2);
+			(ft_putstr_fd("minishell: export: `", 2), ft_putstr_fd(args[i], 2));
 			ft_putstr_fd("': not a valid identifier\n", 2);
 			status = 1;
 		}
 		else
 		{
 			if (handle_export_arg(args[i], shell) != 0)
-			{
-				ft_putstr_fd("minishell: export: allocation error\n", 2);
 				status = 1;
-			}
 		}
 		i++;
 	}

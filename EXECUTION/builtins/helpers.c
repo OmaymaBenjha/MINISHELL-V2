@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   helpers.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/11 13:19:37 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/08/11 13:24:06 by oben-jha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "builtins.h"
 
 int	is_valid_identifier(const char *s)
@@ -16,12 +28,12 @@ int	is_valid_identifier(const char *s)
 	return (1);
 }
 
-static int add_var(char *arg, char *eq, t_shell *shell)
+static int	add_var(char *arg, char *eq, t_shell *shell)
 {
-    char *name;
-    char *value;
+	char	*name;
+	char	*value;
 
-    name = ft_substr(arg, 0, eq - arg);
+	name = ft_substr(arg, 0, eq - arg);
 	if (!name)
 		return (0);
 	value = eq + 1;
@@ -29,33 +41,33 @@ static int add_var(char *arg, char *eq, t_shell *shell)
 	return (free(name), 1);
 }
 
-int add_or_app_var(char *arg, char *eq, t_shell *shell)
+int	add_or_app_var(char *arg, char *eq, t_shell *shell)
 {
-    char *name;
-    char *value;
-    char *existing_value;
-    char *new_val;
+	char	*name;
+	char	*value;
+	char	*existing_value;
+	char	*new_val;
 
-    if (eq && eq > arg && *(eq - 1) == '+')
-    {
-        name = ft_substr(arg, 0, eq - arg - 1);
-        if (!name)
-            return (0);
-        value = eq + 1;
-        existing_value = my_getenv(name, shell->envp);
-        if (existing_value)
-        {
-            new_val = ft_strjoin(existing_value, value);
-            if (!new_val)
-                return (free(name), 0);
-            (set_env(name, new_val, shell), free(new_val));
-        }
-        else
-            set_env(name, value, shell);
-        return (free(name), 1);
-    }
-    else
-        return (add_var(arg, eq, shell));
+	if (eq && eq > arg && *(eq - 1) == '+')
+	{
+		name = ft_substr(arg, 0, eq - arg - 1);
+		if (!name)
+			return (0);
+		value = eq + 1;
+		existing_value = my_getenv(name, shell->envp);
+		if (existing_value)
+		{
+			new_val = ft_strjoin(existing_value, value);
+			if (!new_val)
+				return (free(name), 0);
+			(set_env(name, new_val, shell), free(new_val));
+		}
+		else
+			set_env(name, value, shell);
+		return (free(name), 1);
+	}
+	else
+		return (add_var(arg, eq, shell));
 }
 
 int	add_without_value(char *arg, t_shell *shell, int arg_len)
@@ -68,7 +80,7 @@ int	add_without_value(char *arg, t_shell *shell, int arg_len)
 	{
 		if (ft_strncmp(shell->envp[i], arg, arg_len) == 0
 			&& (shell->envp[i][arg_len] == '='
-				|| shell->envp[i][arg_len] == '\0'))
+			|| shell->envp[i][arg_len] == '\0'))
 			return (1);
 		i++;
 	}

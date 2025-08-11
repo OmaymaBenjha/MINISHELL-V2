@@ -12,10 +12,27 @@
 
 #include "parsing.h"
 
+static int	process_line_segment(t_token **tokens, char *line, int *i,
+		int *status)
+{
+	t_token	*new_token;
+
+	if (line[*i] == '$' && (line[*i + 1] == '\"' || line[*i + 1] == '\''))
+		(*i)++;
+	if (is_metachar(line[*i]))
+		new_token = get_operator_token(line, i);
+	else
+		new_token = get_word_token(line, i, status);
+	if (new_token == NULL)
+		return (1);
+	if (new_token != (void *)1)
+		add_token_back(tokens, new_token);
+	return (0);
+}
+
 t_token	*tokenizer(char *line, int *status)
 {
 	t_token	*tokens;
-	t_token	*new_token;
 	int		i;
 
 	tokens = NULL;
@@ -27,17 +44,8 @@ t_token	*tokenizer(char *line, int *status)
 			i++;
 			continue ;
 		}
-		if (line[i] == '$' && (line[i + 1] == '\"' || line[i + 1] == '\''))
-			i++;
-		if (is_metachar(line[i]))
-			new_token = get_operator_token(line, &i);
-		else
-			new_token = get_word_token(line, &i, status);
-		if (new_token == NULL)
+		if (process_line_segment(&tokens, line, &i, status))
 			return (NULL);
-		if (new_token == (void *)1)
-			continue ;
-		add_token_back(&tokens, new_token);
 	}
 	add_token_back(&tokens, create_token(TOKEN_EOF, NULL));
 	return (tokens);

@@ -1,7 +1,7 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror #-g3 -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror
 RM = rm -f
 
 READLINE_PATH = /mnt/homes/oben-jha/homebrew/opt/readline
@@ -16,8 +16,7 @@ INCLUDES = -I. \
            -IGARBAGE_COLLECTOR \
            -IHEREDOC \
            -Itools \
-           -I$(READLINE_PATH)/include 
-
+           -I$(READLINE_PATH)/include
 
 LDFLAGS = -L$(READLINE_PATH)/lib -lreadline
 
@@ -40,7 +39,9 @@ SRCS = main.c \
        EXPAND/helper.c \
        EXPAND/quotes_removal.c \
        EXPAND/utils.c \
+       EXPAND/utils_locking.c \
        EXPAND/utils_1.c \
+       EXPAND/utils2.c \
        GARBAGE_COLLECTOR/gc_mall.c \
        GARBAGE_COLLECTOR/gc_mall2.c \
        HEREDOC/processor.c \
@@ -55,16 +56,24 @@ SRCS = main.c \
        TOKENIZER/tokenizer.c \
        TOKENIZER/tools.c \
        TOKENIZER/words.c \
-       tools/strings.c
+       tools/strings.c \
+       tools/strings1.c \
+       tools/strings2.c \
+       tools/strings3.c
+
+HEADERS = parsing.h \
+          EXECUTION/execution.h \
+          EXECUTION/builtins/builtins.h \
+          EXECUTION/status.h
 
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(OBJS) $(LDFLAGS)  $(CFLAGS) -o $(NAME)
+	$(CC) $(OBJS) $(LDFLAGS) $(CFLAGS) -o $(NAME)
 
-%.o: %.c
+%.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:

@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_pwd.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/11 13:16:46 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/08/11 13:16:46 by oben-jha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "builtins.h"
 
 int	ft_pwd(t_shell *shell)
 {
 	char	*pwd_val;
 
-	pwd_val = my_getenv("PWD", shell->envp);		//hadi kadepandi 3la l 'env , lenv i9dro unset 
+	pwd_val = my_getenv("PWD", shell->envp);
 	if (pwd_val)
 	{
 		ft_putstr_fd(pwd_val, 1);

@@ -27,14 +27,14 @@ static int	count_args_in_segment(t_token *tokens, int *hc)
 				(*hc)++;
 			tokens = tokens->next;
 		}
-			
 		if (tokens)
 			tokens = tokens->next;
 	}
 	return (count);
 }
 
-static int	process_cmds(t_command **command_list, t_token **tokens, int *hc, int *status)
+static int	process_cmds(t_command **command_list, t_token **tokens, int *hc,
+						int *status)
 {
 	t_command	*current_cmd;
 	int			i;

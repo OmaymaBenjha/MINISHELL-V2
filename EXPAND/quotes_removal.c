@@ -31,6 +31,7 @@ static void	clean_quotes_in_args(t_command *cmd)
 		i++;
 	}
 }
+
 static void	clean_quotes_in_redirs(t_command *cmd)
 {
 	t_redir	*redir;

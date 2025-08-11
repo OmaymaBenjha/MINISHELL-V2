@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   strings.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/11 11:36:53 by oben-jha          #+#    #+#             */
+/*   Updated: 2025/08/11 11:36:53 by oben-jha         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "parsing.h"
 
@@ -9,55 +20,6 @@ int	ft_isalpha(int c)
 int	ft_isalnum(int c)
 {
 	return (ft_isalpha(c) || (c >= '0' && c <= '9'));
-}
-
-char	*ft_strjoin(char const *s1, char const *s2)
-{
-	char	*new_str;
-	size_t	i;
-	size_t	j;
-
-	if (!s1 || !s2)
-		return (NULL);
-	new_str = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (!new_str)
-		return (NULL);
-	i = 0;
-	while (s1[i])
-	{
-		new_str[i] = s1[i];
-		i++;
-	}
-	j = 0;
-	while (s2[j])
-	{
-		new_str[i + j] = s2[j];
-		j++;
-	}
-	new_str[i + j] = '\0';
-	return (new_str);
-}
-
-int	ft_strcmp(const char *s1, const char *s2)
-{
-	size_t	i;
-
-	i = 0;
-	while (s1[i] && s2[i] && s1[i] == s2[i])
-		i++;
-	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
-}
-
-int	ft_strncmp(const char *s1, const char *s2, size_t n)
-{
-	size_t	i;
-
-	i = 0;
-	if (n == 0)
-		return (0);
-	while (i < n - 1 && s1[i] && s2[i] && s1[i] == s2[i])
-		i++;
-	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
 char	*ft_strdup(char *value)
@@ -94,12 +56,6 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
-void	ft_putstr_fd(const char *s, int fd)
-{
-	if (s)
-		write(fd, s, ft_strlen(s));
-}
-
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
 	size_t	i;
@@ -124,129 +80,4 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	}
 	r[i] = '\0';
 	return (r);
-}
-
-static size_t	count_words(char const *s, char c)
-{
-	size_t	count;
-	size_t	i;
-
-	count = 0;
-	i = 0;
-	while (s && s[i])
-	{
-		if (s[i] != c)
-		{
-			count++;
-			while (s[i] && s[i] != c)
-				i++;
-		}
-		else
-			i++;
-	}
-	return (count);
-}
-
-char	**ft_split(char const *s, char c)
-{
-	char	**arr;
-	size_t	i;
-	size_t	j;
-	size_t	start;
-
-	if (!s)
-		return (NULL);
-	arr = (char **)gc_mall(sizeof(char *) * (count_words(s, c) + 1));
-	if (!arr)
-		return (NULL);
-	i = 0;
-	j = 0;
-	while (s[i])
-	{
-		if (s[i] != c)
-		{
-			start = i;
-			while (s[i] && s[i] != c)
-				i++;
-			arr[j++] = gc_substr(s, start, i - start);
-		}
-		else
-			i++;
-	}
-	arr[j] = NULL;
-	return (arr);
-}
-char	*ft_strchr(const char *s, int c)
-{
-	while (*s)
-	{
-		if (*s == (char)c)
-			return ((char *)s);
-		s++;
-	}
-	if ((char)c == '\0')
-		return ((char *)s);
-	return (NULL);
-}
-
-int	ft_atoi(const char *str)
-{
-	int		i;
-	int		sign;
-	long	result;
-
-	i = 0;
-	sign = 1;
-	result = 0;
-	while (str[i] == ' ' || (str[i] >= '\t' && str[i] <= '\r'))
-		i++;
-	if (str[i] == '-' || str[i] == '+')
-	{
-		if (str[i] == '-')
-			sign = -1;
-		i++;
-	}
-	while (str[i] >= '0' && str[i] <= '9')
-	{
-		result = result * 10 + (str[i] - '0');
-		i++;
-	}
-	return ((int)(result * sign));
-}
-static int	count_digits(int n)
-{
-	int	count = 1;
-
-	while (n / 10)
-	{
-		n /= 10;
-		count++;
-	}
-	return (count);
-}
-
-char	*ft_itoa(int n)
-{
-	char		*str;
-	long		num;
-	int			len;
-	int			is_negative;
-
-	num = n;
-	is_negative = (num < 0);
-	if (is_negative)
-		num = -num;
-	len = count_digits(num) + is_negative;
-	str = malloc(sizeof(char) * (len + 1));
-	if (!str)
-		return (NULL);
-	str[len] = '\0';
-	while (len-- > 0)
-	{
-		str[len] = '0' + (num % 10);
-		num /= 10;
-		if (len == 0 && is_negative)
-			str[0] = '-';
-	}
-	return (str);
 }

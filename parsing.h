@@ -6,7 +6,7 @@
 /*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 23:08:26 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/08/07 12:43:32 by oben-jha         ###   ########.fr       */
+/*   Updated: 2025/08/11 13:35:51 by oben-jha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,9 +93,9 @@ typedef struct s_exp_data
 {
 	t_shell				*shell;
 	int					*flag;
-	struct	s_exp_data	*next;
+	struct s_exp_data	*next;
 	bool				exp_f;
-} t_exp_data;
+}	t_exp_data;
 
 void		gc_add_pt(void *pt);
 void		*gc_mall(size_t size);
@@ -104,15 +104,11 @@ void		gc_freed(void);
 char		*gc_substr(char const *s, unsigned int start, size_t len);
 char		*gc_strjoin(char const *s1, char const *s2);
 char		*gc_itoa(int n);
-
-// TOKENIZER PROTOTYPES
 t_token		*tokenizer(char *line, int *status);
 t_token		*create_token(t_token_type type, char *value);
 void		add_token_back(t_token **list, t_token *new_token);
 t_token		*get_operator_token(char *line, int *i);
 t_token		*get_word_token(char *line, int *i, int *status);
-
-// PARSER PROTOTYPES
 t_command	*parser(t_token *tokens, int *status);
 int			syntax_error_handler(char *token_value, int *status);
 t_command	*create_command_node(void);
@@ -120,15 +116,11 @@ void		add_command_node_back(t_command **list, t_command *new_cmd);
 t_redir		*create_redir_node(t_token_type type, char *filename);
 void		add_redir_node_back(t_redir **list, t_redir *new_redir);
 int			handle_redirection(t_command *cmd, t_token **current_token, int *s);
-void			heredoc_error();
-
-// HEREDOC PROTOTYPES
+void		heredoc_error(void);
 int			process_heredoc_pipe(t_command *cmds_head, t_shell *shell);
-char    	*final_delim(char *delim);
+char		*final_delim(char *delim);
 void		heredoc_sigint_handler(int sig);
 char		*maybe_expand_line(char *line, bool flag, t_shell *shell);
-
-// EXPAND PROTOTYPES
 char		*expander(char *str, t_shell *shell, int *exp);
 void		quote_remover(t_command *cmd_list);
 char		*strip_quotes(const char *str);
@@ -144,9 +136,7 @@ bool		is_fully_quoted(const char *arg);
 bool		is_valid_ass(const char *arg, int *is_quo);
 int			it_has_tab(char *s);
 bool		has_quotes(const char *str);
-
-
-// TOOLS/STRINGS PROTOTYPES
+void		resplit_replace(char *splited, t_arg_list **head);
 char		*ft_strdup(char *value);
 int			ft_strncmp(const char *s1, const char *s2, size_t n);
 int			ft_strcmp(const char *s1, const char *s2);
@@ -162,15 +152,10 @@ char		**dupenv(char **envp);
 void		free_env(char **envp);
 int			ft_atoi(const char *str);
 int			is_void(char *s);
-
-
-
-// TOOLS/CHECKERS PROTOTYPES
+void		populate_split(char **arr, char const *s, char c);
 int			ft_isspace(char c);
 int			is_metachar(char c);
-int			del_or_fnamesupported_metachar(char c);
 char		**ft_split(char const *s, char c);
 char		*ft_strchr(const char *s, int c);
 
 #endif
-

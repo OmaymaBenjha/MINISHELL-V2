@@ -13,12 +13,11 @@
 #include "parsing.h"
 #include <stdbool.h>
 
-static void ex_sp(char *arg, t_shell *shell, t_arg_list **head, bool spl)
+static void	ex_sp(char *arg, t_shell *shell, t_arg_list **head, bool spl)
 {
 	int		has_expanded;
 	char	*exp_str;
 	char	**sp_words;
-	char	**extra_split;
 	int		j;
 
 	has_expanded = 0;
@@ -29,32 +28,9 @@ static void ex_sp(char *arg, t_shell *shell, t_arg_list **head, bool spl)
 	{
 		sp_words = ft_split(exp_str, ' ');
 		j = 0;
-		while (sp_words && sp_words[j] && !is_void(sp_words[j]) )
+		while (sp_words && sp_words[j] && !is_void(sp_words[j]))
 		{
-			if (sp_words[j][0] != '\0'  && ft_strcmp(sp_words[j], "$\"\"") != 0 && ft_strcmp(sp_words[j], "$\'\'") != 0
-				&& ft_strcmp(sp_words[j], "\"\"") != 0 && ft_strcmp(sp_words[j], "\'\'") != 0)
-			{
-				int i = 0;
-				while (sp_words[j][i] != '\0')
-				{
-					if (sp_words[j][i] == '$' && (sp_words[j][i+1] == '\'' || sp_words[j][i+1] == '\"'))
-	    				sp_words[j][i] = '\"';
-					i++;
-				}
-				if(it_has_tab(sp_words[j]))
-				{
-					i = 0;
-					extra_split = ft_split(sp_words[j], '\t');
-					while (extra_split && extra_split[i] && (extra_split[i][0] != '$' && extra_split[i][1] != '\"' && extra_split[i][1] != '\'')
-					    && (extra_split[i][1] != '\'' && (extra_split[i][1] != '\"')))
-					{
-						add_arg_to_list(head, extra_split[i]);
-						i++;
-					}
-				}
-				else
-					add_arg_to_list(head, sp_words[j]);
-			}
+			resplit_replace(sp_words[j], head);
 			j++;
 		}
 	}
@@ -62,16 +38,16 @@ static void ex_sp(char *arg, t_shell *shell, t_arg_list **head, bool spl)
 		add_arg_to_list(head, exp_str);
 }
 
-static void rebuild_args_with_splitting(t_command *cmd, t_shell *shell)
+static void	rebuild_args_with_splitting(t_command *cmd, t_shell *shell)
 {
 	t_arg_list	*arg_head;
 	int			i;
 	bool		is_export;
 	bool		prevent_splitting_for_this_arg;
-	int 		is_quoted_key;
+	int			is_quoted_key;
 
 	if (!cmd->args || !cmd->args[0])
-		return;
+		return ;
 	arg_head = NULL;
 	is_export = (ft_strcmp(cmd->args[0], "export") == 0);
 	i = 0;
@@ -79,7 +55,8 @@ static void rebuild_args_with_splitting(t_command *cmd, t_shell *shell)
 	while (cmd->args[i])
 	{
 		prevent_splitting_for_this_arg = false;
-		if ((i > 0 && is_valid_ass(cmd->args[i], &is_quoted_key) && is_export) || is_quoted_key)
+		if ((i > 0 && is_valid_ass(cmd->args[i], &is_quoted_key) && is_export)
+			|| is_quoted_key)
 			prevent_splitting_for_this_arg = true;
 		ex_sp(cmd->args[i], shell, &arg_head, prevent_splitting_for_this_arg);
 		i++;

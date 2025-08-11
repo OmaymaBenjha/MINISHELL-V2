@@ -5,5 +5,4 @@
 
 void	set_exit_status(int status);
 int		get_exit_status(void);
-
 #endif
