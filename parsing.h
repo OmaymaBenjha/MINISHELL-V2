@@ -23,10 +23,10 @@
 # include <signal.h>
 # include <sys/wait.h>
 
+extern volatile sig_atomic_t	g_signal_received;
+
 # define SQUOTE_LOCK '\x03'
 # define DQUOTE_LOCK '\x04'
-
-
 
 typedef struct s_shell
 {

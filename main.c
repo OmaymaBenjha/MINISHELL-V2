@@ -49,7 +49,7 @@ int	main(int argc, char **argv, char **envp)
 		printf("usage : ./minishell\n");
 		return (1);
 	}
-	if (!envp || !isatty(1) || !isatty(0))
+	if (!isatty(1) || !isatty(0))
 		return (1);
 	initialize_shell(&shell, envp);
 	tcgetattr(STDIN_FILENO, &term);

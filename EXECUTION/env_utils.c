@@ -42,8 +42,7 @@ int	set_env(const char *name, const char *value, t_shell *shell)
 	i = 0;
 	while (shell->envp[i])
 	{
-		if (ft_strncmp(shell->envp[i], name, name_len) == 0
-			&& shell->envp[i][name_len] == '=')
+		if (ft_strncmp(shell->envp[i], name, name_len) == 0)
 		{
 			free(shell->envp[i]);
 			shell->envp[i] = new_var;

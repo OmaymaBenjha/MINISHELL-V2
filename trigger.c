@@ -15,8 +15,6 @@
 #include <termios.h>
 #include <stdlib.h>
 
-volatile sig_atomic_t	g_signal_received = 0;
-
 static void	signal_handler(int sig)
 {
 	g_signal_received = sig;
