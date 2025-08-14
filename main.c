@@ -14,8 +14,6 @@
 #include "EXECUTION/execution.h"
 #include <termios.h>
 
-volatile sig_atomic_t	g_signal_received = 0;
-
 static void	shell_loop(t_shell *shell, struct termios *term)
 {
 	char	*line;

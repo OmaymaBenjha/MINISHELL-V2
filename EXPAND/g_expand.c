@@ -28,8 +28,10 @@ static void	ex_sp(char *arg, t_shell *shell, t_arg_list **head, bool spl)
 	{
 		sp_words = ft_split(exp_str, ' ');
 		j = 0;
-		while (sp_words && sp_words[j] && !is_void(sp_words[j]))
+		while (sp_words && sp_words[j])
 		{
+			if (is_void(sp_words[j]))
+				j++;
 			resplit_replace(sp_words[j], head);
 			j++;
 		}

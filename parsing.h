@@ -23,7 +23,7 @@
 # include <signal.h>
 # include <sys/wait.h>
 
-extern volatile sig_atomic_t	g_signal_received;
+int	g_signal_received;
 
 # define SQUOTE_LOCK '\x03'
 # define DQUOTE_LOCK '\x04'
