@@ -104,7 +104,7 @@ int	wait_for_children(pid_t last_pid)
 			term_sig = WTERMSIG(status);
 			exit_status = 128 + term_sig;
 			if (term_sig == SIGQUIT)
-				ft_putstr_fd("Quit\n", 2);
+				ft_putstr_fd("Quit: 3\n", 2);
 		}
 	}
 	else
