@@ -15,9 +15,6 @@
 
 # include "../parsing.h"
 # include <fcntl.h>
-# include <sys/wait.h>
-# include <sys/stat.h>
-# include <string.h>
 # include <errno.h>
 
 int		set_env(const char *name, const char *value, t_shell *shell);

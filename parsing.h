@@ -14,14 +14,12 @@
 # define PARSING_H
 
 # include <stdlib.h>
-# include <stddef.h>
 # include <stdio.h>
 # include <stdbool.h>
 # include <unistd.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <signal.h>
-# include <sys/wait.h>
 # include <limits.h>
 
 int	g_signal_received;

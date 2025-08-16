@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "parsing.h"
-#include "EXECUTION/execution.h"
+#include "execution/execution.h"
 #include <termios.h>
 
 static void	shell_loop(t_shell *shell, struct termios *term)

@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: aziane <aziane@student.1337.ma>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/11 20:09:18 by aziane            #+#    #+#             */
-/*   Updated: 2025/08/11 20:56:36 by aziane           ###   ########.fr       */
+/*   Created: 2025/08/16 17:21:14 by aziane            #+#    #+#             */
+/*   Updated: 2025/08/16 17:21:14 by aziane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	handle_exit(char *id)
 		exit(0);
 }
 
-void handler(int sig)
+void	handler(int sig)
 {
 	if (sig == SIGINT)
 	{
@@ -47,4 +47,3 @@ void handler(int sig)
 		rl_replace_line("", 0);
 	}
 }
-

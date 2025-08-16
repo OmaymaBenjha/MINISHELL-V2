@@ -1,20 +1,20 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror
 RM = rm -f
 
-READLINE_PATH = /mnt/homes/oben-jha/homebrew/opt/readline
+READLINE_PATH = /mnt/homes/aziane/homebrew/opt/readline
 
 INCLUDES = -I. \
-           -IEXECUTION \
-           -IEXECUTION/builtins \
-           -IEXPAND \
-           -IPARSER \
-           -IPARSER/nodes \
-           -ITOKENIZER \
-           -IGARBAGE_COLLECTOR \
-           -IHEREDOC \
+           -Iexecution \
+           -Iexecution/builtins \
+           -Iexpand \
+           -Iparser \
+           -Iparser/nodes \
+           -Itokenizer \
+           -Igarbage_collector \
+           -Iheredoc \
            -Itools \
            -I$(READLINE_PATH)/include
 
@@ -22,52 +22,52 @@ LDFLAGS = -L$(READLINE_PATH)/lib -lreadline
 
 SRCS = main.c \
 	   trigger.c \
-       EXECUTION/builtins_dispatch.c \
-       EXECUTION/env_utils.c \
-	    EXECUTION/env_utils_helper.c \
-       EXECUTION/executor.c \
-       EXECUTION/path_finder.c \
-       EXECUTION/redirections.c \
-	   EXECUTION/handler.c \
-	   EXECUTION/executor_helper.c \
-       EXECUTION/builtins/ft_cd.c \
-       EXECUTION/builtins/ft_echo.c \
-       EXECUTION/builtins/ft_env.c \
-       EXECUTION/builtins/ft_exit.c \
-       EXECUTION/builtins/ft_export.c \
-       EXECUTION/builtins/ft_pwd.c \
-       EXECUTION/builtins/ft_unset.c \
-       EXECUTION/builtins/helpers.c \
-       EXPAND/expand.c \
-       EXPAND/g_expand.c \
-       EXPAND/helper.c \
-       EXPAND/quotes_removal.c \
-       EXPAND/utils.c \
-       EXPAND/utils_locking.c \
-       EXPAND/utils_1.c \
-       EXPAND/utils2.c \
-       GARBAGE_COLLECTOR/gc_mall.c \
-       GARBAGE_COLLECTOR/gc_mall2.c \
-       HEREDOC/processor.c \
-       HEREDOC/helpers.c \
-       PARSER/error_handler.c \
-       PARSER/processor.c \
-       PARSER/redirections.c \
-       PARSER/nodes/cmd_nodes.c \
-       PARSER/nodes/redir_nodes.c \
-       TOKENIZER/nodes.c \
-       TOKENIZER/operators.c \
-       TOKENIZER/tokenizer.c \
-       TOKENIZER/tools.c \
-       TOKENIZER/words.c \
+       execution/builtins_dispatch.c \
+       execution/env_utils.c \
+	   execution/env_utils_helper.c \
+       execution/executor.c \
+       execution/path_finder.c \
+       execution/redirections.c \
+	   execution/handler.c \
+	   execution/executor_helper.c \
+       execution/builtins/ft_cd.c \
+       execution/builtins/ft_echo.c \
+       execution/builtins/ft_env.c \
+       execution/builtins/ft_exit.c \
+       execution/builtins/ft_export.c \
+       execution/builtins/ft_pwd.c \
+       execution/builtins/ft_unset.c \
+       execution/builtins/helpers.c \
+       expand/expand.c \
+       expand/g_expand.c \
+       expand/helper.c \
+       expand/quotes_removal.c \
+       expand/utils.c \
+       expand/utils_locking.c \
+       expand/utils_1.c \
+       expand/utils2.c \
+       garbage_collector/gc_mall.c \
+       garbage_collector/gc_mall2.c \
+       heredoc/processor.c \
+       heredoc/helpers.c \
+       parser/error_handler.c \
+       parser/processor.c \
+       parser/redirections.c \
+       parser/nodes/cmd_nodes.c \
+       parser/nodes/redir_nodes.c \
+       tokenizer/nodes.c \
+       tokenizer/operators.c \
+       tokenizer/tokenizer.c \
+       tokenizer/tools.c \
+       tokenizer/words.c \
        tools/strings.c \
        tools/strings1.c \
        tools/strings2.c \
        tools/strings3.c
 
 HEADERS = parsing.h \
-          EXECUTION/execution.h \
-          EXECUTION/builtins/builtins.h
+          execution/execution.h \
+          execution/builtins/builtins.h
 
 OBJS = $(SRCS:.c=.o)
 

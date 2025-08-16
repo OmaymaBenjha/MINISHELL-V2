@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_exit.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: oben-jha <oben-jha@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/08 13:17:40 by oben-jha          #+#    #+#             */
-/*   Updated: 2025/08/08 13:24:44 by oben-jha         ###   ########.fr       */
-/*                                                                            */
+/*																			*/
+/*														:::	  ::::::::   */
+/*   ft_exit.c										  :+:	  :+:	:+:   */
+/*													+:+ +:+		 +:+	 */
+/*   By: aziane <aziane@student.1337.ma>			+#+  +:+	   +#+		*/
+/*												+#+#+#+#+#+   +#+		   */
+/*   Created: 2025/08/16 17:17:08 by aziane			#+#	#+#			 */
+/*   Updated: 2025/08/16 17:17:08 by aziane		   ###   ########.fr	   */
+/*																			*/
 /* ************************************************************************** */
 
 #include "builtins.h"
@@ -17,33 +17,33 @@ static	int	is_numeric_char(char c)
 	return (c >= '0' && c <= '9');
 }
 
-static    int    is_valid_exit_arg(char *n)
+static	int	is_valid_exit_arg(char *n)
 {
-    int    i;
-    char **splited;
+	int		i;
+	char	**splited;
 
-    i = 0;
-    if (!n)
-        return (0);
-    splited = ft_split(n, ' ');
-    if (splited[1])
-        return (0);
-    while (ft_isspace(n[i]))
-        i++;
-    if (n[i] == '+' || n[i] == '-')
-        i++;
-    if (n[i] == '\0')
-        return (0);
-    while (n[i])
-    {
-        if (!is_numeric_char(n[i]) && !ft_isspace(n[i]))
-            return (0);
-        i++;
-    }
-    return (1);
+	i = 0;
+	if (!n)
+		return (0);
+	splited = ft_split(n, ' ');
+	if (splited[1])
+		return (0);
+	while (ft_isspace(n[i]))
+		i++;
+	if (n[i] == '+' || n[i] == '-')
+		i++;
+	if (n[i] == '\0')
+		return (0);
+	while (n[i])
+	{
+		if (!is_numeric_char(n[i]) && !ft_isspace(n[i]))
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
-static int is_digit(char *s)
+static int	is_digit(char *s)
 {
 	int	i;
 
@@ -51,11 +51,12 @@ static int is_digit(char *s)
 	while (s[i])
 	{
 		if (!is_numeric_char(s[i]))
-			return 1;
+			return (1);
 		i++;
 	}
-		return 0;
+	return (0);
 }
+
 int	ft_exit(char **args, t_shell *shell)
 {
 	long long	status;
@@ -65,7 +66,7 @@ int	ft_exit(char **args, t_shell *shell)
 	{
 		if (is_digit(args[1]))
 			(ft_putstr_fd("minishell: exit: ", 2), ft_putstr_fd(args[1], 2),
-					ft_putstr_fd(": numeric argument required\n", 2), exit(255));
+				ft_putstr_fd(": numeric argument required\n", 2), exit(255));
 		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
 		return (1);
 	}
