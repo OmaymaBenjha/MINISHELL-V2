@@ -38,13 +38,28 @@ static	int	is_valid_exit_arg(char *n)
 	}
 	return (1);
 }
+static int is_digit(char *s)
+{
+	int	i;
 
+	i = 0;
+	while (s[i])
+	{
+		if (!is_numeric_char(s[i]))
+			return 1;
+		i++;
+	}
+		return 0;
+}
 int	ft_exit(char **args, t_shell *shell)
 {
 	long long	status;
 
 	if (args[1] && args[2])
 	{
+		if (is_digit(args[1]))
+			(ft_putstr_fd("minishell: exit: ", 2), ft_putstr_fd(args[1], 2),
+					ft_putstr_fd(": numeric argument required\n", 2), exit(255));
 		ft_putstr_fd("exit\n", 1);
 		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
 		return (1);
@@ -53,12 +68,8 @@ int	ft_exit(char **args, t_shell *shell)
 	{
 		ft_putstr_fd("exit\n", 1);
 		if (!is_valid_exit_arg(args[1]))
-		{
-			ft_putstr_fd("minishell: exit: ", 2);
-			ft_putstr_fd(args[1], 2);
-			ft_putstr_fd(": numeric argument required\n", 2);
-			exit(255);
-		}
+			(ft_putstr_fd("minishell: exit: ", 2), ft_putstr_fd(args[1], 2),
+				ft_putstr_fd(": numeric argument required\n", 2), exit(255));
 		status = ft_atoi(args[1]);
 		exit(status % 256);
 	}
