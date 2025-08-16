@@ -110,8 +110,8 @@ void	executor(t_command *commands, t_shell *shell)
 {
 	if (!commands)
 		return ;
-	signal(SIGINT, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, handler);
+	signal(SIGQUIT, handler);
 	if (commands->next_piped_command)
 		execute_pipeline(commands, shell);
 	else

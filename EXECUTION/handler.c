@@ -31,3 +31,20 @@ void	handle_exit(char *id)
 	else if (errno == ENOEXEC)
 		exit(0);
 }
+
+void handler(int sig)
+{
+	if (sig == SIGINT)
+	{
+		write(1, "\n", 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+	}
+	else
+	{
+		write(1, "Quit: 3\n", 9);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+	}
+}
+

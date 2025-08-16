@@ -25,6 +25,8 @@ int	is_valid_identifier(const char *s)
 			return (0);
 		i++;
 	}
+	if (s[i] == '+' && (s[i +1] == '+' || s[i +1] != '='))
+		return (0);
 	return (1);
 }
 
