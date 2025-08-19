@@ -54,11 +54,29 @@ static void	run_parsed_commands(t_command *commands, t_shell *shell)
 		else
 			shell->last_exit_status = 1;
 	}
+    close_heredoc_fds(commands);
 	sa.sa_handler = signal_handler;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	sigaction(SIGINT, &sa, NULL);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void	process_input_line(char *line, t_shell *shell)
 {

@@ -21,8 +21,9 @@
 # include <readline/history.h>
 # include <signal.h>
 # include <limits.h>
+# include <wait.h>
 
-int	g_signal_received;
+extern int	g_signal_received;
 
 # define SQUOTE_LOCK '\x03'
 # define DQUOTE_LOCK '\x04'
@@ -161,5 +162,6 @@ char		*ft_strchr(const char *s, int c);
 void		initialize_shell(t_shell *shell, char **envp);
 void		process_input_line(char *line, t_shell *shell);
 int			ft_isll(const char *str);
+void		close_heredoc_fds(t_command *cmds);
 
 #endif

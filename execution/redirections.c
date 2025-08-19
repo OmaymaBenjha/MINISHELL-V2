@@ -32,6 +32,7 @@ static int	handle_input_redir(t_redir *redir)
 	{
 		dup2(redir->heredoc_fd, STDIN_FILENO);
 		close(redir->heredoc_fd);
+		redir->heredoc_fd = -1;
 	}
 	return (0);
 }
