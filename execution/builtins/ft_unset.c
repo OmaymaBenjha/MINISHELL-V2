@@ -58,7 +58,7 @@ static char	**rebuild_env_without_var(char **old_envp, int index_to_skip)
 	return (new_envp);
 }
 
-static int	remove_env_var(char *var_to_unset, char ***envp_ptr)
+int	remove_env_var(char *var_to_unset, char ***envp_ptr)
 {
 	int		index_to_remove;
 	char	**new_envp;

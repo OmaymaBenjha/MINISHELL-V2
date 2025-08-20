@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/*																			*/
-/*														:::	  ::::::::   */
-/*   trigger.c										  :+:	  :+:	:+:   */
-/*													+:+ +:+		 +:+	 */
-/*   By: aziane <aziane@student.1337.ma>			+#+  +:+	   +#+		*/
-/*												+#+#+#+#+#+   +#+		   */
-/*   Created: 2025/08/11 22:12:11 by aziane			#+#	#+#			 */
-/*   Updated: 2025/08/11 22:33:42 by aziane		   ###   ########.fr	   */
-/*																			*/
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   trigger.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aziane <aziane@student.1337.ma>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/20 17:29:58 by aziane            #+#    #+#             */
+/*   Updated: 2025/08/20 17:29:58 by aziane           ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
@@ -40,7 +40,8 @@ static void	setup_signals(void)
 	signal(SIGQUIT, SIG_IGN);
 }
 
-static void	run_parsed_commands(t_command *commands, t_shell *shell)
+static void	run_parsed_commands(t_command *commands, t_shell *shell,
+	struct termios *term)
 {
 	struct sigaction	sa;
 
@@ -50,10 +51,10 @@ static void	run_parsed_commands(t_command *commands, t_shell *shell)
 		{
 			quote_remover(commands);
 			executor(commands, shell);
-			if (shell->last_exit_status == 130
-				|| shell->last_exit_status == 131)
+			if (shell->last_exit_status == 131)
 			{
-				write(1, "\n", 1);
+				tcsetattr(STDIN_FILENO, TCSANOW, term);
+				write(STDOUT_FILENO, "Quit: 3\n", 9);
 				rl_on_new_line();
 				rl_replace_line("", 0);
 			}
@@ -68,7 +69,7 @@ static void	run_parsed_commands(t_command *commands, t_shell *shell)
 	sigaction(SIGINT, &sa, NULL);
 }
 
-void	process_input_line(char *line, t_shell *shell)
+void	process_input_line(char *line, t_shell *shell, struct termios *term)
 {
 	t_token		*tokens;
 	t_command	*commands;
@@ -78,7 +79,7 @@ void	process_input_line(char *line, t_shell *shell)
 	tokens = tokenizer(line, &shell->last_exit_status);
 	commands = parser(tokens, &shell->last_exit_status);
 	if (commands)
-		run_parsed_commands(commands, shell);
+		run_parsed_commands(commands, shell, term);
 	free(line);
 	gc_freed();
 }
@@ -106,8 +107,7 @@ void	initialize_shell(t_shell *shell, char **envp)
 	if (shell->cwd[0] != '\0')
 		set_env("PWD", shell->cwd, shell);
 	set_env("OLDPWD", (const char *) NULL, shell);
-	set_env("PATH", "/.brew/bin:/mnt/homes/oben-jha/.docker/bin"
-		":/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.", shell);
-	set_env("_", "/usr/bin/env", shell);
-	setup_signals();
+	set_env("PATH", "/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.", shell);
+	(remove_env_var("_", &shell->envp), set_env("_", "/usr/bin/env", shell));
+	(set_env("SHLVL", "1", shell), setup_signals());
 }

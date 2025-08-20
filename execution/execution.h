@@ -16,6 +16,7 @@
 # include "../parsing.h"
 # include <fcntl.h>
 # include <errno.h>
+# include "builtins/builtins.h"
 
 int		set_env(const char *name, const char *value, t_shell *shell);
 int		handle_redirections(t_command *cmd);
@@ -32,5 +33,9 @@ pid_t	execute_pipeline_command(t_command *cmd, t_shell *shell,
 void	parent_handle_pipe_fds(int *in_fd, int *pipe_fd, t_command *cmd);
 int		add_new_env_var(char *new_var, t_shell *shell, int size);
 char	*create_env_string(const char *name, const char *value);
+int		status_is_exited(int status);
+int		get_exit_code(int status);
+int		get_term_signal(int status);
+void	handle_term_signal_messages(int status);
 
 #endif

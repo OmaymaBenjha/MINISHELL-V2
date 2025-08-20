@@ -41,7 +41,7 @@ static void	bubble_sort_env(char **env, int count)
 	}
 }
 
-static char	**duplicate_env_for_sorting(char **envp, int *count)
+static char	**dup_env_for_sort(char **envp, int *count)
 {
 	int		i;
 	char	**new_envp;
@@ -62,20 +62,20 @@ static char	**duplicate_env_for_sorting(char **envp, int *count)
 	return (new_envp);
 }
 
-static int	print_exported_vars(char **envp)
+static int	show_vars(char **sorted_envp, int i)
 {
-	int		i;
 	char	*equal_sign;
 	int		name_len;
-	char	**sorted_envp;
 
-	sorted_envp = duplicate_env_for_sorting(envp, &i);
 	if (!sorted_envp)
 		return (1);
 	bubble_sort_env(sorted_envp, i);
 	i = -1;
 	while (sorted_envp && sorted_envp[++i])
 	{
+		if (ft_strncmp(sorted_envp[i], "_=", 2) == 0
+			|| ft_strncmp(sorted_envp[i], "_\0", 2) == 0)
+			continue ;
 		ft_putstr_fd("declare -x ", 1);
 		equal_sign = ft_strchr(sorted_envp[i], '=');
 		if (equal_sign)
@@ -97,6 +97,8 @@ static int	handle_export_arg(char *arg, t_shell *shell)
 	size_t	arg_len;
 
 	equal_sign = ft_strchr(arg, '=');
+	if (ft_strncmp(arg, "_=", 2) == 0 || ft_strncmp(arg, "_\0", 2) == 0)
+		return (0);
 	if (equal_sign)
 	{
 		if (!add_or_app_var(arg, equal_sign, shell))
@@ -113,26 +115,26 @@ static int	handle_export_arg(char *arg, t_shell *shell)
 
 int	ft_export(char **args, t_shell *shell)
 {
-	int	i;
-	int	status;
+	int		i;
+	int		status;
+	int		count;
 
 	i = 1;
 	status = 0;
 	if (!args[1])
-		return (print_exported_vars(shell->envp));
+		return (show_vars(dup_env_for_sort(shell->envp, &count), count));
 	while (args[i])
 	{
 		if (!is_valid_identifier(args[i]))
 		{
-			(ft_putstr_fd("minishell: export: `", 2), ft_putstr_fd(args[i], 2));
+			ft_putstr_fd("minishell: export: `", 2);
+			ft_putstr_fd(args[i], 2);
 			ft_putstr_fd("': not a valid identifier\n", 2);
 			status = 1;
 		}
 		else
-		{
 			if (handle_export_arg(args[i], shell) != 0)
 				status = 1;
-		}
 		i++;
 	}
 	return (status);

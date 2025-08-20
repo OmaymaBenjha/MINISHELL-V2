@@ -31,7 +31,7 @@ static void	shell_loop(t_shell *shell, struct termios *term)
 			ft_putstr_fd("exit\n", 1);
 			break ;
 		}
-		process_input_line(line, shell);
+		process_input_line(line, shell, term);
 		tcsetattr(STDIN_FILENO, TCSANOW, term);
 	}
 }

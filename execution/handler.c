@@ -31,3 +31,27 @@ void	handle_exit(char *id)
 	else if (errno == ENOEXEC)
 		exit(0);
 }
+
+int	status_is_exited(int status)
+{
+	return ((status & 0xFF) == 0);
+}
+
+int	get_exit_code(int status)
+{
+	return ((status >> 8) & 0xFF);
+}
+
+int	get_term_signal(int status)
+{
+	return (status & 0x7F);
+}
+
+void	handle_term_signal_messages(int status)
+{
+	int	term_sig;
+
+	term_sig = get_term_signal(status);
+	if (term_sig == SIGINT)
+		write(STDOUT_FILENO, "\n", 1);
+}

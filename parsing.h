@@ -21,11 +21,11 @@
 # include <readline/history.h>
 # include <signal.h>
 # include <limits.h>
-# include <sys/wait.h>
+# include <termios.h>
 
 int	g_signal_received;
 
-# define SQUOTE_LOCK '\x03'
+# define SQUOTE_LOCK '\x03' 
 # define DQUOTE_LOCK '\x04'
 
 typedef struct s_shell
@@ -33,6 +33,7 @@ typedef struct s_shell
 	char	**envp;
 	int		last_exit_status;
 	char	cwd[PATH_MAX];
+	int		last_sig;
 }	t_shell;
 
 typedef struct s_gc_node
@@ -161,7 +162,8 @@ int			is_metachar(char c);
 char		**ft_split(char const *s, char c);
 char		*ft_strchr(const char *s, int c);
 void		initialize_shell(t_shell *shell, char **envp);
-void		process_input_line(char *line, t_shell *shell);
+void		process_input_line(char *line, t_shell *shell,
+				struct termios *term);
 int			ft_isll(const char *str);
 void		close_heredoc_fds(t_command *cmds);
 size_t		ft_strlcpy(char *dest, const char *src, size_t size);

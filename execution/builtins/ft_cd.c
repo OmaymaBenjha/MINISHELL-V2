@@ -53,22 +53,23 @@ static void	update_cwd(t_shell *shell, char *path, char *oldpwd)
 	char	*tmp;
 	char	*join;
 
-	if (getcwd(shell->cwd, PATH_MAX) != NULL)
-		return ;
-	if (path[0] == '/')
-		tmp = ft_strdup(path);
-	else
+	if (getcwd(shell->cwd, PATH_MAX) == NULL)
 	{
-		join = ft_strjoin(oldpwd, "/");
-		tmp = ft_strjoin(join, path);
-		free(join);
+		if (path[0] == '/')
+			tmp = ft_strdup(path);
+		else
+		{
+			join = ft_strjoin(oldpwd, "/");
+			tmp = ft_strjoin(join, path);
+			free(join);
+		}
+		if (tmp)
+		{
+			ft_strlcpy(shell->cwd, tmp, PATH_MAX);
+			free(tmp);
+		}
+		perror("minishell: cd: error retrieving current directory");
 	}
-	if (tmp)
-	{
-		ft_strlcpy(shell->cwd, tmp, PATH_MAX);
-		free(tmp);
-	}
-	perror("minishell: cd: error retrieving current directory");
 }
 
 int	ft_cd(char **args, t_shell *shell)

@@ -25,5 +25,6 @@ int		ft_unset(char **args, t_shell *shell);
 int		add_or_app_var(char *arg, char *eq, t_shell *shell);
 int		add_without_value(char *arg, t_shell *shell, int arg_len);
 int		is_valid_identifier(const char *s);
+int		remove_env_var(char *var_to_unset, char ***envp_ptr);
 
 #endif

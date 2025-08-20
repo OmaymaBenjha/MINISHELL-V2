@@ -91,25 +91,25 @@ void	restore_fds(int original_stdin, int original_stdout)
 
 int	wait_for_children(pid_t last_pid)
 {
-	int	status;
+	int	final_status;
+	int	temp_status;
 	int	exit_status;
-	int	term_sig;
 
-	if (last_pid > 0)
+	exit_status = 1;
+	if (last_pid > 0 && waitpid(last_pid, &final_status, 0) != -1)
 	{
-		waitpid(last_pid, &status, 0);
-		if (WIFEXITED(status))
-			exit_status = WEXITSTATUS(status);
-		else if (WIFSIGNALED(status))
+		if (status_is_exited(final_status))
+			exit_status = get_exit_code(final_status);
+		else
 		{
-			term_sig = WTERMSIG(status);
-			exit_status = 128 + term_sig;
+			exit_status = 128 + get_term_signal(final_status);
+			handle_term_signal_messages(final_status);
 		}
 	}
-	else
-		exit_status = 1;
-	while (wait(NULL) != -1 || errno != ECHILD)
+	while (wait(&temp_status) != -1 || errno != ECHILD)
 	{
+		if (!status_is_exited(temp_status))
+			handle_term_signal_messages(temp_status);
 	}
 	return (exit_status);
 }
