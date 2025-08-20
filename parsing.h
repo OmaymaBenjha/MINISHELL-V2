@@ -27,11 +27,13 @@ extern int	g_signal_received;
 
 # define SQUOTE_LOCK '\x03'
 # define DQUOTE_LOCK '\x04'
+# define PATH_MAX 4096
 
 typedef struct s_shell
 {
 	char	**envp;
 	int		last_exit_status;
+	char	cwd[PATH_MAX];
 }	t_shell;
 
 typedef struct s_gc_node

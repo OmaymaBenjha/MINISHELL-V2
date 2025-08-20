@@ -14,46 +14,94 @@
 #include <unistd.h>
 #include <stdio.h>
 
-static int	update_pwd_in_env(t_shell *shell)
+static void	set_pwd_vars(t_shell *shell, char *oldpwd)
 {
-	char	cwd_buffer[1024];
-	char	*old_pwd_val;
-
-	old_pwd_val = my_getenv("PWD", shell->envp);
-	if (old_pwd_val)
-		set_env("OLDPWD", old_pwd_val, shell);
-	if (getcwd(cwd_buffer, sizeof(cwd_buffer)) != NULL)
-	{
-		return (set_env("PWD", cwd_buffer, shell));
-	}
-	perror("minishell: cd: getcwd");
-	return (1);
+	if (oldpwd && oldpwd[0] != '\0')
+		set_env("OLDPWD", oldpwd, shell);
+	set_env("PWD", shell->cwd, shell);
 }
 
-int	ft_cd(char **args, t_shell *shell)
+static char	*get_cd_path(char **args, t_shell *shell)
 {
 	char	*path;
-	char	*old_pwd_path;
+	char	*tmp;
 
-	if (args[1] && args[2])
-		return (ft_putstr_fd("minishell: cd: too many arguments\n", 2), 1);
 	path = args[1];
 	if (!path)
 	{
 		path = my_getenv("HOME", shell->envp);
 		if (!path)
-			return (ft_putstr_fd("minishell: cd: HOME not set\n", 2), 1);
+			ft_putstr_fd("minishell: cd: HOME not set\n", 2);
 	}
 	else if (ft_strcmp(path, "-") == 0)
 	{
-		old_pwd_path = my_getenv("OLDPWD", shell->envp);
-		if (!old_pwd_path)
-			return (ft_putstr_fd("minishell: cd: OLDPWD not set\n", 2), 1);
-		path = old_pwd_path;
-		(ft_putstr_fd(path, 1), ft_putstr_fd("\n", 1));
+		tmp = my_getenv("OLDPWD", shell->envp);
+		if (!tmp)
+		{
+			ft_putstr_fd("minishell: cd: OLDPWD not set\n", 2);
+			return (NULL);
+		}
+		path = tmp;
+		ft_putstr_fd(path, 1);
+		ft_putstr_fd("\n", 1);
 	}
+	return (path);
+}
+
+static void	update_cwd(t_shell *shell, char *path, char *oldpwd)
+{
+	char	*tmp;
+	char	*join;
+	size_t	i;
+
+	if (getcwd(shell->cwd, PATH_MAX) == NULL)
+	{
+		if (path[0] == '/')
+			tmp = ft_strdup(path);
+		else
+		{
+			join = ft_strjoin(oldpwd, "/");
+			tmp = ft_strjoin(join, path);
+			free(join);
+		}
+		if (tmp)
+		{
+			i = 0;
+			while (tmp[i] && i < PATH_MAX - 1)
+			{
+				shell->cwd[i] = tmp[i];
+				i++;
+			}
+			shell->cwd[i] = '\0';
+			free(tmp);
+		}
+		perror("minishell: cd: error retrieving current directory");
+	}
+}
+
+int	ft_cd(char **args, t_shell *shell)
+{
+	char	*path;
+	char	*oldpwd;
+
+	if (args[1] && args[2])
+	{
+		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
+		return (1);
+	}
+	path = get_cd_path(args, shell);
+	if (!path)
+		return (1);
+	oldpwd = ft_strdup(shell->cwd);
 	if (chdir(path) != 0)
-		return (ft_putstr_fd("minishell: cd: ", 2), perror(path), 1);
-	update_pwd_in_env(shell);
+	{
+		free(oldpwd);
+		ft_putstr_fd("minishell: cd: ", 2);
+		perror(path);
+		return (1);
+	}
+	update_cwd(shell, path, oldpwd);
+	set_pwd_vars(shell, oldpwd);
+	free(oldpwd);
 	return (0);
 }

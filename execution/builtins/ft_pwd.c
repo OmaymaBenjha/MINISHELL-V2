@@ -11,18 +11,25 @@
 /* ************************************************************************** */
 
 #include "builtins.h"
+#include <unistd.h>
 
 int	ft_pwd(t_shell *shell)
 {
-	char	*pwd_val;
+    char	buf[PATH_MAX];
 
-	pwd_val = my_getenv("PWD", shell->envp);
-	if (pwd_val)
-	{
-		ft_putstr_fd(pwd_val, 1);
-		ft_putstr_fd("\n", 1);
-		return (0);
-	}
-	ft_putstr_fd("minishell: pwd: PWD not set\n", 2);
-	return (1);
+    if (shell->cwd[0] != '\0')
+    {
+        ft_putstr_fd(shell->cwd, 1);
+        ft_putstr_fd("\n", 1);
+        return (0);
+    }
+    if (getcwd(buf, PATH_MAX) != NULL)
+    {
+        ft_putstr_fd(buf, 1);
+        ft_putstr_fd("\n", 1);
+        return (0);
+    }
+    ft_putstr_fd("minishell: pwd: error retrieving current directory: "
+        "getcwd: cannot access parent directories\n", 2);
+    return (1);
 }
