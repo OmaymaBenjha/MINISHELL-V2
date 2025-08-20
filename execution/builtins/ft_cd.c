@@ -52,31 +52,23 @@ static void	update_cwd(t_shell *shell, char *path, char *oldpwd)
 {
 	char	*tmp;
 	char	*join;
-	size_t	i;
 
-	if (getcwd(shell->cwd, PATH_MAX) == NULL)
+	if (getcwd(shell->cwd, PATH_MAX) != NULL)
+		return ;
+	if (path[0] == '/')
+		tmp = ft_strdup(path);
+	else
 	{
-		if (path[0] == '/')
-			tmp = ft_strdup(path);
-		else
-		{
-			join = ft_strjoin(oldpwd, "/");
-			tmp = ft_strjoin(join, path);
-			free(join);
-		}
-		if (tmp)
-		{
-			i = 0;
-			while (tmp[i] && i < PATH_MAX - 1)
-			{
-				shell->cwd[i] = tmp[i];
-				i++;
-			}
-			shell->cwd[i] = '\0';
-			free(tmp);
-		}
-		perror("minishell: cd: error retrieving current directory");
+		join = ft_strjoin(oldpwd, "/");
+		tmp = ft_strjoin(join, path);
+		free(join);
 	}
+	if (tmp)
+	{
+		ft_strlcpy(shell->cwd, tmp, PATH_MAX);
+		free(tmp);
+	}
+	perror("minishell: cd: error retrieving current directory");
 }
 
 int	ft_cd(char **args, t_shell *shell)
@@ -84,6 +76,7 @@ int	ft_cd(char **args, t_shell *shell)
 	char	*path;
 	char	*oldpwd;
 
+	chdir(shell->cwd);
 	if (args[1] && args[2])
 	{
 		ft_putstr_fd("minishell: cd: too many arguments\n", 2);

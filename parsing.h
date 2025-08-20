@@ -21,13 +21,12 @@
 # include <readline/history.h>
 # include <signal.h>
 # include <limits.h>
-# include <wait.h>
+# include <sys/wait.h>
 
-extern int	g_signal_received;
+int	g_signal_received;
 
 # define SQUOTE_LOCK '\x03'
 # define DQUOTE_LOCK '\x04'
-# define PATH_MAX 4096
 
 typedef struct s_shell
 {
@@ -165,5 +164,6 @@ void		initialize_shell(t_shell *shell, char **envp);
 void		process_input_line(char *line, t_shell *shell);
 int			ft_isll(const char *str);
 void		close_heredoc_fds(t_command *cmds);
+size_t		ft_strlcpy(char *dest, const char *src, size_t size);
 
 #endif

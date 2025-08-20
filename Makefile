@@ -4,7 +4,7 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror
 RM = rm -f
 
-READLINE_PATH = /mnt/homes/oben-jha/homebrew/opt/readline
+READLINE_PATH = /mnt/homes/aziane/homebrew/opt/readline
 
 INCLUDES = -I. \
            -Iexecution \
